@@ -1,6 +1,8 @@
 package edu.utah.cs4962.mywishlist;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +17,7 @@ public class MainScreenActivity extends Activity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main_screen);
 
         Button wishListButton = (Button)findViewById(R.id.myWishListButton);
         wishListButton.setOnClickListener(new View.OnClickListener()
@@ -22,7 +25,7 @@ public class MainScreenActivity extends Activity
             @Override
             public void onClick(View view)
             {
-
+                openWishList(MainScreenActivity.this);
             }
         });
         Button sSantaGroupButton = (Button) findViewById(R.id.mySecretSantaGroup);
@@ -31,7 +34,6 @@ public class MainScreenActivity extends Activity
             @Override
             public void onClick(View view)
             {
-
             }
         });
         Button secretBuddiesButton = (Button) findViewById(R.id.mySecretBuddiesButton);
@@ -44,12 +46,13 @@ public class MainScreenActivity extends Activity
             }
         });
 
-
-
-
-        setContentView(R.layout.activity_main_screen);
     }
 
+    private void openWishList(Context context)
+    {
+        Intent intent = new Intent(context, myNewWishItem.class);
+        startActivity(intent);
+    }
 
 
     //region Menu
