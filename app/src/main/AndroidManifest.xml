@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="edu.utah.cs4962.mywishlist" >
 
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -17,11 +22,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".myListActivity"
+            android:name="edu.utah.cs4962.mywishlist.myListActivity"
             android:label="myList">
         </activity>
         <activity
-            android:name="edu.utah.cs4962.mywishlist.myNewWishItem"
+            android:name=".myNewWishItemActivity"
             android:label="myNew List Item">
         </activity>
     </application>

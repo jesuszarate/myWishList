@@ -48,9 +48,16 @@ public class MainScreenActivity extends Activity
 
     }
 
+
     private void openWishList(Context context)
     {
-        Intent intent = new Intent(context, myNewWishItem.class);
+        Intent intent = new Intent(context, myListActivity.class);
+        startActivity(intent);
+    }
+
+    private void openWishListItem(Context context)
+    {
+        Intent intent = new Intent(context, myNewWishItemActivity.class);
         startActivity(intent);
     }
 

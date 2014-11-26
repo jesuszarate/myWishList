@@ -1,98 +1,84 @@
 package edu.utah.cs4962.mywishlist;
 
 import android.app.Activity;
-import android.content.Context;
-import android.database.DataSetObserver;
-import android.util.AttributeSet;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.app.Notification;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListAdapter;
-import android.widget.ListView;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
- * Created by Jesus Zarate on 11/24/14.
+ * Created by Jesus Zarate on 11/25/14.
  */
-public class myListActivity extends Activity implements ListAdapter
+public class myListActivity extends Activity
 {
-    ListView wishItemList;
+    myListFragment listFragment;
     @Override
-    public View onCreateView(String name, Context context, AttributeSet attrs)
+    protected void onCreate(Bundle savedInstanceState)
     {
-        wishItemList = new ListView(context);
-        wishItemList.setAdapter(this);
+        super.onCreate(savedInstanceState);
+        LinearLayout rootLayout = new LinearLayout(this);
+        rootLayout.setOrientation(LinearLayout.VERTICAL);
+        rootLayout.setId(11);
 
-        return wishItemList;
+        //region <Title>
+        LinearLayout titleLayout = new LinearLayout(this);
+        titleLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+        Resources res = getResources();
+        int pink = res.getColor(R.color.pink);
+        int indigo = res.getColor(R.color.indigo);
+        titleLayout.setBackgroundColor(indigo);
+
+        TextView titleView = new TextView(this);
+        titleView.setText("     myList");
+        titleView.setTextSize(40);
+        titleView.setTypeface(null, Typeface.BOLD_ITALIC);
+        titleView.setGravity(Gravity.CENTER);
+        titleView.setTextColor(pink);
+
+        ImageButton addItemButton = new ImageButton(this);
+        addItemButton.setImageResource(R.drawable.plus_sign);
+        addItemButton.setBackgroundColor(Color.TRANSPARENT);
+        addItemButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                openCamera();
+            }
+        });
+
+        titleLayout.addView(titleView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 90));
+        titleLayout.addView(addItemButton, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 10));
+        //region <Title>
+
+        listFragment = new myListFragment();
+
+        LinearLayout listLayout = new LinearLayout(this);
+
+
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.add(11, listFragment);
+        transaction.commit();
+
+
+        rootLayout.addView(titleLayout);
+        rootLayout.addView(listLayout);
+        setContentView(rootLayout);
     }
 
-    @Override
-    public boolean areAllItemsEnabled()
-    {
-        return false;
-    }
-
-    @Override
-    public boolean isEnabled(int i)
-    {
-        return false;
-    }
-
-    @Override
-    public void registerDataSetObserver(DataSetObserver dataSetObserver)
+    private void openCamera()
     {
 
-    }
-
-    @Override
-    public void unregisterDataSetObserver(DataSetObserver dataSetObserver)
-    {
-
-    }
-
-    @Override
-    public int getCount()
-    {
-        return 0;
-    }
-
-    @Override
-    public Object getItem(int i)
-    {
-        return null;
-    }
-
-    @Override
-    public long getItemId(int i)
-    {
-        return 0;
-    }
-
-    @Override
-    public boolean hasStableIds()
-    {
-        return false;
-    }
-
-    @Override
-    public View getView(int i, View view, ViewGroup viewGroup)
-    {
-        return null;
-    }
-
-    @Override
-    public int getItemViewType(int i)
-    {
-        return 0;
-    }
-
-    @Override
-    public int getViewTypeCount()
-    {
-        return 0;
-    }
-
-    @Override
-    public boolean isEmpty()
-    {
-        return false;
     }
 }

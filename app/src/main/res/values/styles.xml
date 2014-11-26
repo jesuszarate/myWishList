@@ -5,4 +5,7 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="Indigo">
+        <item name="android:colorBackground">#3F51B5</item>
+    </style>
 </resources>
