@@ -2,4 +2,9 @@
 <resources>
     <color name="indigo">#3F51B5</color>
     <color name="pink">#FF4081</color>
+    <color name="blue_gray">#607D8B</color>
+    <color name="accent_light_blue">#80D8FF</color>
+    <color name="primary_light_blue">#03A9F4</color>
+    <color name="accent_green">#B9F6CA</color>
+    <color name="background_light_blue">#80D8FF</color>
 </resources>

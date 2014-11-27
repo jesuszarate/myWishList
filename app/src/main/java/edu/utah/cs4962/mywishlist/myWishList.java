@@ -17,7 +17,6 @@ public class myWishList
         if(_instance == null)
         {
             _instance = new myWishList();
-            _instance.addWishtItem(new myWishItem());
         }
         return _instance;
     }

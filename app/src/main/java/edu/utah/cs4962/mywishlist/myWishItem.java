@@ -7,10 +7,21 @@ public class myWishItem
 {
     private String itemName;
     private String locationName;
-    private int price;
+    private double price;
     private boolean onSale;
-    private int wantLevel;
+    private double wantLevel;
     private Coordinates coordinates;
+    private String imageName;
+
+    public String getImageName()
+    {
+        return imageName;
+    }
+
+    public void setImageName(String imageName)
+    {
+        this.imageName = imageName;
+    }
 
     public Coordinates getCoordinates()
     {
@@ -42,12 +53,12 @@ public class myWishItem
         this.locationName = locationName;
     }
 
-    public int getPrice()
+    public double getPrice()
     {
         return price;
     }
 
-    public void setPrice(int price)
+    public void setPrice(double price)
     {
         this.price = price;
     }
@@ -62,12 +73,12 @@ public class myWishItem
         this.onSale = onSale;
     }
 
-    public int getWantLevel()
+    public double getWantLevel()
     {
         return wantLevel;
     }
 
-    public void setWantLevel(int wantLevel)
+    public void setWantLevel(double wantLevel)
     {
         this.wantLevel = wantLevel;
     }

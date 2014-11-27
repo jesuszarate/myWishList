@@ -8,26 +8,26 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0.50"
-        android:weightSum="1">
+        android:layout_weight="0.30"
+        android:weightSum="1"
+        android:layout_marginTop="10dp">
 
         <ImageView
-            android:layout_width="207dp"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:id="@+id/imageView"
             android:layout_gravity="center_horizontal"
-            android:layout_weight="0.80"
             android:src="@drawable/ic_launcher"/>
     </LinearLayout>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0.40"
+        android:layout_weight="0.70"
         android:weightSum="1">
 
         <TextView
@@ -42,6 +42,7 @@
 
             />
 
+        <!--Edit Text-->
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -62,6 +63,7 @@
             android:layout_marginBottom="5dp"
             android:layout_marginLeft="10dp"/>
 
+        <!--Edit Text-->
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -98,6 +100,7 @@
                 android:textSize="20dp"
                 android:textStyle="bold"/>
 
+                <!--Edit Text-->
                 <EditText
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
