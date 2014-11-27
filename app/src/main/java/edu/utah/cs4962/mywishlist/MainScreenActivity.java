@@ -13,6 +13,9 @@ import android.widget.Button;
 public class MainScreenActivity extends Activity
 {
 
+    public static final String MY_LIST = "myList";
+    public static final String SS_GROUP = "ssGroup";
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -25,7 +28,7 @@ public class MainScreenActivity extends Activity
             @Override
             public void onClick(View view)
             {
-                openWishList(MainScreenActivity.this);
+                openWishList(MainScreenActivity.this, MY_LIST);
             }
         });
         Button sSantaGroupButton = (Button) findViewById(R.id.mySecretSantaGroup);
@@ -34,6 +37,7 @@ public class MainScreenActivity extends Activity
             @Override
             public void onClick(View view)
             {
+                openWishList(MainScreenActivity.this, SS_GROUP);
             }
         });
         Button secretBuddiesButton = (Button) findViewById(R.id.mySecretBuddiesButton);
@@ -48,19 +52,18 @@ public class MainScreenActivity extends Activity
 
     }
 
-
-    private void openWishList(Context context)
+    private void openWishList(Context context, String TypeOfList)
     {
         Intent intent = new Intent(context, myListActivity.class);
+        intent.putExtra(TypeOfList, true);
         startActivity(intent);
     }
 
-    private void openWishListItem(Context context)
+    private void openSecretSantaGroup(Context context)
     {
         Intent intent = new Intent(context, myNewWishItemActivity.class);
         startActivity(intent);
     }
-
 
     //region Menu
     @Override

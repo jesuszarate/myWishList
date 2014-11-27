@@ -66,10 +66,22 @@ public class myListActivity extends Activity
             @Override
             public void onClick(View view)
             {
-                openCamera();
+                if(getIntent().hasExtra(MainScreenActivity.MY_LIST))
+                {
+                    openCamera();
+                }
+                else if(getIntent().hasExtra(MainScreenActivity.SS_GROUP))
+                {
+                    openAddMemberActivity(myListActivity.this);
+
+                }
             }
         });
 
+        if(getIntent().hasExtra(MainScreenActivity.SS_GROUP))
+        {
+            titleView.setText("mySecret Santa Group");
+        }
         titleLayout.addView(titleView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 90));
         titleLayout.addView(_addItemButton, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 10));
         //endregion <Title>
@@ -87,6 +99,12 @@ public class myListActivity extends Activity
         rootLayout.addView(titleLayout);
         rootLayout.addView(listLayout);
         setContentView(rootLayout);
+    }
+
+    private void openAddMemberActivity(Context context)
+    {
+        Intent addMemberIntent = new Intent(context, SignupActivity.class);
+        startActivity(addMemberIntent);
     }
 
     public static final String LATEST_IMAGE = "l0a1t2e3s4t5.png";
@@ -125,7 +143,7 @@ public class myListActivity extends Activity
             }
             if (requestCode == NEW_ITEM_ADDED)
             {
-                // r
+                // Refresh the list to reflect the newly added item.
                 listFragment.refreshList();
             }
         }
@@ -136,6 +154,7 @@ public class myListActivity extends Activity
     {
         Intent openNewWishItemIntent = new Intent(context, myNewWishItemActivity.class);
         //openNewWishItemIntent.putExtra(BITMAP, bitmap);
+
         openNewWishItemIntent.putExtra(IMAGE_PATH, imagePath);
         startActivityForResult(openNewWishItemIntent, NEW_ITEM_ADDED);
     }

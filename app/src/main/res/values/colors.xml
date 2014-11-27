@@ -6,5 +6,6 @@
     <color name="accent_light_blue">#80D8FF</color>
     <color name="primary_light_blue">#03A9F4</color>
     <color name="accent_green">#B9F6CA</color>
-    <color name="background_light_blue">#80D8FF</color>
+    <color name="background_light_blue">#0091EA</color>
+    <color name="layoutbackground_ligth_blue">#B3E5FC</color>
 </resources>

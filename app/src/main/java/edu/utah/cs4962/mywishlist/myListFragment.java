@@ -3,6 +3,7 @@ package edu.utah.cs4962.mywishlist;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
@@ -33,10 +34,13 @@ import java.util.HashSet;
  */
 public class myListFragment extends Fragment implements ListAdapter
 {
+    public static final String ITEM_ID = "ITEMID";
+
     ListView wishItemList;
 
     // key => ImageName, value => bitmap
     HashMap<String, Bitmap> pictures;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -53,10 +57,19 @@ public class myListFragment extends Fragment implements ListAdapter
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
             {
                 // Start the item activity.
+                openSelectedItem(getActivity(), i);
             }
         });
 
         return wishItemList;
+    }
+
+    private void openSelectedItem(Context context, int itemId)
+    {
+        Intent myItemIntent = new Intent(context, myWishItemActivity.class);
+
+        myItemIntent.putExtra(ITEM_ID, itemId);
+        startActivity(myItemIntent);
     }
 
     public void refreshList()

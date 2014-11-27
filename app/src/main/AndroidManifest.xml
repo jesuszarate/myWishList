@@ -30,6 +30,14 @@
             android:name=".myNewWishItemActivity"
             android:label="myNew List Item">
         </activity>
+        <activity
+            android:name="edu.utah.cs4962.mywishlist.myWishItemActivity"
+            android:label="myWish Item">
+        </activity>
+        <activity
+            android:name="edu.utah.cs4962.mywishlist.SignupActivity"
+            android:label="myWish Item">
+        </activity>
     </application>
 
 </manifest>

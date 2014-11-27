@@ -1,5 +1,7 @@
 package edu.utah.cs4962.mywishlist;
 
+import android.graphics.Bitmap;
+
 /**
  * Created by Jesus Zarate on 11/25/14.
  */
@@ -12,6 +14,17 @@ public class myWishItem
     private double wantLevel;
     private Coordinates coordinates;
     private String imageName;
+    private Bitmap picture;
+
+    public Bitmap getPicture()
+    {
+        return picture;
+    }
+
+    public void setPicture(Bitmap picture)
+    {
+        this.picture = picture;
+    }
 
     public String getImageName()
     {

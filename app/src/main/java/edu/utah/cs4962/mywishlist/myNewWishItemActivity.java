@@ -29,6 +29,8 @@ public class myNewWishItemActivity extends Activity
 
     public String imagePath;
 
+    myWishItem newWishItem;
+
     EditText itemName;
     EditText itemLocation;
     EditText itemPrice;
@@ -59,12 +61,14 @@ public class myNewWishItemActivity extends Activity
 
         ImageView imageView = (ImageView) findViewById(R.id.imageView);
 
+        // Create a new wish item
+        newWishItem = new myWishItem();
+
         itemName = (EditText) findViewById(R.id.itemNameInputText);
         itemLocation = (EditText) findViewById(R.id.locationInputText);
 
         if (getIntent().hasExtra(myListActivity.IMAGE_PATH))
         {
-
             imagePath = getIntent().getStringExtra(myListActivity.IMAGE_PATH);
 
             BitmapFactory.Options options = new BitmapFactory.Options();
@@ -72,7 +76,7 @@ public class myNewWishItemActivity extends Activity
             Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
             imageView.setImageBitmap(bitmap);
 
-
+            newWishItem.setPicture(bitmap);
             //Bitmap image = (Bitmap) getIntent().getBundleExtra(myListActivity.BITMAP).get("data");
             //imageView.setImageBitmap(image);
         }
@@ -90,8 +94,6 @@ public class myNewWishItemActivity extends Activity
             public void onClick(View view)
             {
 
-                // Create a new wish item
-                myWishItem newWishItem = new myWishItem();
                 if (checkCorrectInput())
                 {
                     newWishItem.setItemName(itemName.getText().toString());
