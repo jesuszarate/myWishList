@@ -8,4 +8,6 @@
     <color name="accent_green">#B9F6CA</color>
     <color name="background_light_blue">#0091EA</color>
     <color name="layoutbackground_ligth_blue">#B3E5FC</color>
+    <color name="list_darker_blue">#40C4FF</color>
+    <color name="accent_red">#00B0FF</color>
 </resources>

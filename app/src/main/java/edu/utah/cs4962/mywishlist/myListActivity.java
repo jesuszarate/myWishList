@@ -6,7 +6,6 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -16,6 +15,7 @@ import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -29,11 +29,16 @@ public class myListActivity extends Activity
 {
     static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 15;
     static final int NEW_ITEM_ADDED = 16;
+    static final int MEMBER_ADDED = 17;
+
 
     myListFragment listFragment;
+    SecretSantaGroupFragment secretSantaGroupFragment;
     private ImageButton _addItemButton;
 
     public static final String MY_WISH_LIST_DIR = "myWishListImages";
+    public static final String SIGN_UP_RESULTS = "addnewmember";
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -73,7 +78,6 @@ public class myListActivity extends Activity
                 else if(getIntent().hasExtra(MainScreenActivity.SS_GROUP))
                 {
                     openAddMemberActivity(myListActivity.this);
-
                 }
             }
         });
@@ -86,25 +90,60 @@ public class myListActivity extends Activity
         titleLayout.addView(_addItemButton, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 10));
         //endregion <Title>
 
-        listFragment = new myListFragment();
 
         LinearLayout listLayout = new LinearLayout(this);
 
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(11, listFragment);
-        transaction.commit();
+        if(getIntent().hasExtra(MainScreenActivity.MY_LIST))
+        {
+            listFragment = new myListFragment();
 
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.add(11, listFragment);
+            transaction.commit();
+        }
+        else if(getIntent().hasExtra(MainScreenActivity.SS_GROUP))
+        {
+            secretSantaGroupFragment = new SecretSantaGroupFragment();
+
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.add(11, secretSantaGroupFragment);
+            transaction.commit();
+        }
 
         rootLayout.addView(titleLayout);
         rootLayout.addView(listLayout);
+
+
+        // Button to assign secret buddies
+        if(getIntent().hasExtra(MainScreenActivity.SS_GROUP))
+        {
+            Button assignBuddiesButton = new Button(this);
+            assignBuddiesButton.setText("Assign Secret Buddies");
+
+            assignBuddiesButton.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View view)
+                {
+                    RandomizeBuddies randomizeBuddies = new RandomizeBuddies();
+                    randomizeBuddies.randomizer(GroupMemebers.getInstance().getSsGroupList());
+                }
+            });
+
+            rootLayout.addView(assignBuddiesButton, new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        }
+
         setContentView(rootLayout);
     }
 
     private void openAddMemberActivity(Context context)
     {
         Intent addMemberIntent = new Intent(context, SignupActivity.class);
-        startActivity(addMemberIntent);
+        addMemberIntent.putExtra(SIGN_UP_RESULTS, true);
+        startActivityForResult(addMemberIntent, MEMBER_ADDED);
     }
 
     public static final String LATEST_IMAGE = "l0a1t2e3s4t5.png";
@@ -135,16 +174,16 @@ public class myListActivity extends Activity
         {
             if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE)
             {
-                //Bundle extras = data.getExtras();
-                //Bitmap imageBitmap = (Bitmap) extras.get("data");
-                //_addItemButton.setImageBitmap(imageBitmap);
-
                 openNewWishItemActivity(this);
             }
             if (requestCode == NEW_ITEM_ADDED)
             {
                 // Refresh the list to reflect the newly added item.
                 listFragment.refreshList();
+            }
+            else if (requestCode == MEMBER_ADDED)
+            {
+                secretSantaGroupFragment.refreshList();
             }
         }
     }
@@ -153,7 +192,6 @@ public class myListActivity extends Activity
     public void openNewWishItemActivity(Context context)
     {
         Intent openNewWishItemIntent = new Intent(context, myNewWishItemActivity.class);
-        //openNewWishItemIntent.putExtra(BITMAP, bitmap);
 
         openNewWishItemIntent.putExtra(IMAGE_PATH, imagePath);
         startActivityForResult(openNewWishItemIntent, NEW_ITEM_ADDED);

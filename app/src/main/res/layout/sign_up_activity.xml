@@ -49,7 +49,7 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/itemNameInputText"
+            android:id="@+id/userNameInputText"
             android:textSize="20dp"
             android:layout_marginBottom="35dp"
             android:layout_marginLeft="10dp"
@@ -73,12 +73,30 @@
             android:layout_marginBottom="5dp"
             android:layout_marginLeft="10dp"/>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Email Password"
+            android:id="@+id/passwordLabel"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="10dp"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/passwordInput"
+            android:textSize="20dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"/>
+
     </LinearLayout>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Add Buddy"
         android:layout_gravity="bottom|center_horizontal"
-        android:id="@+id/addNewItemButton"
+        android:id="@+id/addBuddyButton"
         />
 </LinearLayout>
