@@ -10,6 +10,9 @@ public class myWishList
 
     private ArrayList<myWishItem> wishList = new ArrayList<myWishItem>();
 
+    private String userName;
+    private String emailAddress;
+
     private static myWishList _instance = null;
 
     static myWishList getInstance()
@@ -45,5 +48,26 @@ public class myWishList
     public int getWishListCount()
     {
         return wishList.size();
+    }
+
+    public String getEmailAddress()
+    {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(String emailAddress)
+    {
+        this.emailAddress = emailAddress;
+    }
+
+    public String getUserName()
+    {
+
+        return userName;
+    }
+
+    public void setUserName(String userName)
+    {
+        this.userName = userName;
     }
 }

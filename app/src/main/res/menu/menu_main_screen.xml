@@ -1,8 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:tools="http://schemas.android.com/tools"
-      tools:context=".MainScreenActivity">
-    <item android:id="@+id/action_settings"
-          android:title="@string/action_settings"
+      tools:context="edu.utah.cs4962.mywishlist">
+    <item android:id="@+id/action_share"
+          android:title="@string/action_share"
+          android:icon="@drawable/plus_sign"
           android:orderInCategory="100"
           android:showAsAction="never"/>
+
 </menu>

@@ -21,6 +21,27 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:mimeType="application/octet-stream"
+                    android:host="*"
+                    android:pathPattern=".*\\.mwl"
+                    />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:mimeType="application/mwl"
+                    android:host="*"
+                    android:pathPattern=".*\\.mwl"
+                    />
+            </intent-filter>
         </activity>
         <activity
             android:name="edu.utah.cs4962.mywishlist.myListActivity"
@@ -39,5 +60,7 @@
             android:label="myWish Item">
         </activity>
     </application>
+
+    <!--FILTERS-->
 
 </manifest>
