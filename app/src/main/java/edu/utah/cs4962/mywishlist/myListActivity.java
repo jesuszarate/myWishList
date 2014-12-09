@@ -26,11 +26,8 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
-import org.json.JSONObject;
-
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -82,8 +79,9 @@ public class myListActivity extends Activity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_share)
         {
+            //shareMyWishList(myWishList.getInstance().getWishList());
+            shareMyWishList(myWishList.getInstance().toBuddy());
 
-            shareMyWishList(myWishList.getInstance().getWishList());
             return true;
         }
 
@@ -122,20 +120,26 @@ public class myListActivity extends Activity
             @Override
             public void onClick(View view)
             {
-                if (getIntent().hasExtra(MainScreenActivity.MY_LIST))
+
+                // MY LIST VIEW
+                if (getIntent().hasExtra(MainScreenActivity.MY_LIST_TYPE) &&
+                        getIntent().getBooleanExtra(MainScreenActivity.MY_LIST_TYPE, true))
                 {
                     openCamera();
-                } else if (getIntent().hasExtra(MainScreenActivity.SS_GROUP))
+                }
+
+                // SECRET SANTA VIEW
+                else if (getIntent().hasExtra(MainScreenActivity.SS_GROUP_TYPE)
+                        || getIntent().hasExtra(MainScreenActivity.BUDDY_LIST_TYPE))
                 {
                     openAddMemberActivity(myListActivity.this);
                 }
+
             }
         });
 
-        if (getIntent().hasExtra(MainScreenActivity.SS_GROUP))
-        {
-            titleView.setText("mySecret Santa Group");
-        }
+        setHeaderTitle(titleView);
+
         titleLayout.addView(_addItemButton, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 10));
         titleLayout.addView(titleView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 90));
         //endregion <Title>
@@ -143,17 +147,38 @@ public class myListActivity extends Activity
 
         LinearLayout listLayout = new LinearLayout(this);
 
-        if (getIntent().hasExtra(MainScreenActivity.MY_LIST))
+        if (getIntent().hasExtra(MainScreenActivity.MY_LIST_TYPE))
         {
             listFragment = new myListFragment();
 
+            boolean myList = getIntent().getBooleanExtra(MainScreenActivity.MY_LIST_TYPE, true);
+            if(myList)
+            {
+                listFragment.init(myListFragment.MY_LIST, 0);
+            }
+            else {
+                int selectedItem = getIntent().getIntExtra(SecretSantaGroupFragment.SELECTED_BUDDY, 0);
+                listFragment.init(myListFragment.BUDDY_LIST, selectedItem);
+            }
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.add(11, listFragment);
             transaction.commit();
-        } else if (getIntent().hasExtra(MainScreenActivity.SS_GROUP))
+        }
+        else if (getIntent().hasExtra(MainScreenActivity.SS_GROUP_TYPE))
         {
             secretSantaGroupFragment = new SecretSantaGroupFragment();
+            secretSantaGroupFragment.init(SecretSantaGroupFragment.SECRET_SANTA_LIST);
+
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.add(11, secretSantaGroupFragment);
+            transaction.commit();
+        }
+        else if (getIntent().hasExtra(MainScreenActivity.BUDDY_LIST_TYPE))
+        {
+            secretSantaGroupFragment = new SecretSantaGroupFragment();
+            secretSantaGroupFragment.init(SecretSantaGroupFragment.BUDDY_LIST);
 
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -164,10 +189,9 @@ public class myListActivity extends Activity
         rootLayout.addView(titleLayout);
         rootLayout.addView(listLayout);
 
-
         sendEmailsClass = new SendEmailsClass(this);
         // Button to assign secret buddies
-        if (getIntent().hasExtra(MainScreenActivity.SS_GROUP))
+        if (getIntent().hasExtra(MainScreenActivity.SS_GROUP_TYPE))
         {
             Button assignBuddiesButton = new Button(this);
             assignBuddiesButton.setText("Assign Secret Buddies");
@@ -197,11 +221,26 @@ public class myListActivity extends Activity
         setContentView(rootLayout);
     }
 
-    public void shareMyWishList(ArrayList<myWishItem> wishList)
-    {
-        wishList = compressWishList(wishList);
 
-        String list = gson.toJson(wishList);
+    private void setHeaderTitle(TextView titleView)
+    {
+        if (getIntent().hasExtra(MainScreenActivity.SS_GROUP_TYPE))
+        {
+            titleView.setText("mySecret Santa Group");
+        }
+        else if(getIntent().hasExtra(MainScreenActivity.BUDDY_LIST_TYPE))
+        {
+            // Get the wish list extra
+            titleView.setText("mySecret Buddy List");
+        }
+    }
+
+    public void shareMyWishList(Buddy buddy)//ArrayList<myWishItem> wishList)
+    {
+        buddy.wishList = compressWishList(buddy.wishList);
+
+        String b = gson.toJson(buddy);
+
         // create attachment
         String filename = "MyWishList.mwl";
 
@@ -216,7 +255,7 @@ public class myListActivity extends Activity
 
             BufferedWriter bufferedWriter = new BufferedWriter(textWriter);
 
-            bufferedWriter.write(list);
+            bufferedWriter.write(b);
             bufferedWriter.close();
         } catch (IOException e)
         {
@@ -255,13 +294,11 @@ public class myListActivity extends Activity
     private void sendEmail(String recipients, File file)
     {
         final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-//        emailIntent.setType("message/rfc822");
         emailIntent.setType("application/mwl");
 
         emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, recipients);
         emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, myListActivity.EXTRA_SUBJECT);
-        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, createMessageBoddy());
-
+        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, createMessageBody());
 
         Uri uri = Uri.parse("file://" + file.getAbsolutePath());
         emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
@@ -272,7 +309,7 @@ public class myListActivity extends Activity
                 REQUEST_SHARE_DATA);
     }
 
-    private String createMessageBoddy()
+    private String createMessageBody()
     {
         String message = "";
         for (myWishItem item : myWishList.getInstance().getWishList())

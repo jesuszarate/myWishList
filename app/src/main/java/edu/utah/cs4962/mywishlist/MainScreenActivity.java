@@ -1,34 +1,20 @@
 package edu.utah.cs4962.mywishlist;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public class MainScreenActivity extends Activity
 {
 
-    public static final String MY_LIST = "myList";
-    public static final String SS_GROUP = "ssGroup";
+    public static final String MY_LIST_TYPE = "myList";
+    public static final String SS_GROUP_TYPE = "ssGroup";
+    public static final String BUDDY_LIST_TYPE = "buddyList";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -42,7 +28,7 @@ public class MainScreenActivity extends Activity
             getIntent().setData(null);
             try
             {
-                importData(data);
+                //importData(data);
             } catch (Exception e)
             {
                 // warn user about bad data here
@@ -57,7 +43,7 @@ public class MainScreenActivity extends Activity
             @Override
             public void onClick(View view)
             {
-                openWishList(MainScreenActivity.this, MY_LIST);
+                openWishList(MainScreenActivity.this, MY_LIST_TYPE);
             }
         });
         Button sSantaGroupButton = (Button) findViewById(R.id.mySecretSantaGroup);
@@ -66,58 +52,22 @@ public class MainScreenActivity extends Activity
             @Override
             public void onClick(View view)
             {
-                openWishList(MainScreenActivity.this, SS_GROUP);
+                openWishList(MainScreenActivity.this, SS_GROUP_TYPE);
             }
         });
+
         Button secretBuddiesButton = (Button) findViewById(R.id.mySecretBuddiesButton);
         secretBuddiesButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
-
+                openWishList(MainScreenActivity.this, BUDDY_LIST_TYPE);
             }
         });
 
     }
 
-    private void importData(Uri data)
-    {
-        final String scheme = data.getScheme();
-
-        if (ContentResolver.SCHEME_CONTENT.equals(scheme))
-        {
-            try
-            {
-                ContentResolver cr = this.getContentResolver();
-                InputStream is = cr.openInputStream(data);
-                if (is == null) return;
-
-                StringBuffer buf = new StringBuffer();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-                String str;
-                if (is != null)
-                {
-                    while ((str = reader.readLine()) != null)
-                    {
-                        buf.append(str + "\n");
-                    }
-                }
-                is.close();
-
-                //JSONObject json = new JSONObject(buf.toString());
-
-                Type myWishListType = new TypeToken<ArrayList<myWishItem>>() {
-                }.getType();
-                Gson gson = new Gson();
-
-                ArrayList<myWishItem> linePoints = gson.fromJson(buf.toString(), myWishListType);
-
-                // perform your data import here…
-
-            }catch (Exception e){}
-        }
-    }
     private void openWishList(Context context, String TypeOfList)
     {
         Intent intent = new Intent(context, myListActivity.class);

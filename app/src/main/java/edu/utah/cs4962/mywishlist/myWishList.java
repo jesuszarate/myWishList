@@ -70,4 +70,14 @@ public class myWishList
     {
         this.userName = userName;
     }
+
+    public Buddy toBuddy()
+    {
+        Buddy buddy = new Buddy();
+        buddy.MemberName = userName;
+        buddy.EmailAddress = emailAddress;
+        buddy.wishList = wishList;
+
+        return buddy;
+    }
 }

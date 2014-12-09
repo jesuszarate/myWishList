@@ -25,8 +25,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Objects;
 
 
 /**
@@ -35,12 +37,34 @@ import java.util.HashSet;
 public class myListFragment extends Fragment implements ListAdapter
 {
     public static final String ITEM_ID = "ITEMID";
+    public static final String BUDDY_ID = "buddyIDb";
+
+    public static final int BUDDY_LIST = 201;
+    public static final int MY_LIST = 202;
+
+    private int LIST_TYPE = 0;
+
+    ArrayList<myWishItem> dataList;
+    private int buddyID = -1;
 
     ListView wishItemList;
 
     // key => ImageName, value => bitmap
     HashMap<String, Bitmap> pictures;
 
+    public void init(int listID, int buddyID)//ArrayList<myWishItem> list)
+    {
+        LIST_TYPE = listID;
+
+        if (listID == BUDDY_LIST)
+        {
+            this.buddyID = buddyID;
+            dataList = myBuddyList.getInstance().getBuddy(buddyID).wishList;
+        } else if(listID == MY_LIST)
+        {
+            dataList = myWishList.getInstance().getWishList();
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -69,6 +93,11 @@ public class myListFragment extends Fragment implements ListAdapter
         Intent myItemIntent = new Intent(context, myWishItemActivity.class);
 
         myItemIntent.putExtra(ITEM_ID, itemId);
+
+        if(buddyID > -1 && LIST_TYPE == BUDDY_LIST)
+        {
+            myItemIntent.putExtra(BUDDY_ID, buddyID);
+        }
         startActivity(myItemIntent);
     }
 
@@ -104,13 +133,13 @@ public class myListFragment extends Fragment implements ListAdapter
     @Override
     public int getCount()
     {
-        return myWishList.getInstance().getWishListCount();
+        return dataList.size();
     }
 
     @Override
     public Object getItem(int i)
     {
-        return myWishList.getInstance().getWishItem(i);
+        return dataList.get(i);
     }
 
     @Override
@@ -134,7 +163,7 @@ public class myListFragment extends Fragment implements ListAdapter
         int background_blue = res.getColor(R.color.background_light_blue);
         item.setBackgroundColor(background_blue);
 
-        String imageName = myWishList.getInstance().getWishItem(i).getImageName();
+        String imageName = dataList.get(i).getImageName();//myWishList.getInstance().getWishItem(i).getImageName();
         String imagePath = getImagePath(imageName);
 
         //Bitmap bitmap = getImage(imagePath);
@@ -142,23 +171,22 @@ public class myListFragment extends Fragment implements ListAdapter
         ImageView imagePreview = new ImageView(getActivity());
         //imagePreview.setImageBitmap(bitmap);
 
-        if(!pictures.containsKey(imageName))
+        if (!pictures.containsKey(imageName))
         {
             Bitmap tempB = getPic(imagePath);
             pictures.put(imageName, tempB);
 
             imagePreview.setImageBitmap(tempB);
-        }
-        else
+        } else
         {
             imagePreview.setImageBitmap(pictures.get(imageName));
         }
 
         TextView textView = new TextView(getActivity());
-        textView.setText(myWishList.getInstance().getWishItem(i).getItemName());
+        textView.setText(dataList.get(i).getLocationName());//myWishList.getInstance().getWishItem(i).getItemName());
         textView.setTextSize(20);
         textView.setTypeface(null, Typeface.BOLD_ITALIC);
-        textView.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL);
+        textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
 
         LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 20);
         imageParams.setMargins(20, 20, 0, 20);
@@ -183,7 +211,8 @@ public class myListFragment extends Fragment implements ListAdapter
     @Override
     public boolean isEmpty()
     {
-        return myWishList.getInstance().getWishListCount() <= 0;
+        //return myWishList.getInstance().getWishListCount() <= 0;
+        return dataList.size() <= 0;
     }
 
     public String getImagePath(String imageName)
@@ -192,7 +221,8 @@ public class myListFragment extends Fragment implements ListAdapter
                 "/" + myListActivity.MY_WISH_LIST_DIR + "/" + imageName;
     }
 
-    private Bitmap getPic(String ImagePath) {
+    private Bitmap getPic(String ImagePath)
+    {
         // Get the dimensions of the View
         int targetW = 100;//mImageView.getWidth();
         int targetH = 100;//mImageView.getHeight();
@@ -205,7 +235,7 @@ public class myListFragment extends Fragment implements ListAdapter
         int photoH = bmOptions.outHeight;
 
         // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
 
         // Decode the image file into a Bitmap sized to fill the View
         bmOptions.inJustDecodeBounds = false;

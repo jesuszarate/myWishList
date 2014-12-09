@@ -15,7 +15,8 @@ import android.widget.TextView;
 public class myWishItemActivity extends Activity
 {
 
-   String timeToDestination;
+    String timeToDestination;
+    myWishItem wishItem = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -24,13 +25,19 @@ public class myWishItemActivity extends Activity
 
         setContentView(R.layout.my_wish_item);
 
-        myWishItem wishItem = null;
+        if(getIntent().hasExtra(myListFragment.BUDDY_ID) && getIntent().hasExtra(myListFragment.ITEM_ID))
+        {
+            int itemId = getIntent().getExtras().getInt(myListFragment.ITEM_ID);
+            int buddyId = getIntent().getExtras().getInt(myListFragment.BUDDY_ID);
 
-        if(getIntent().hasExtra(myListFragment.ITEM_ID))
+            wishItem = myBuddyList.getInstance().getBuddy(buddyId).wishList.get(itemId);
+        }
+        else if (getIntent().hasExtra(myListFragment.ITEM_ID))
         {
             int id = getIntent().getExtras().getInt(myListFragment.ITEM_ID);
             wishItem = myWishList.getInstance().getWishItem(id);
         }
+
 
         // Set the color for the text.
         Resources res = getResources();
@@ -56,7 +63,7 @@ public class myWishItemActivity extends Activity
 
         ImageView mapImage = (ImageView) findViewById(R.id.mapImage);
 
-        if(wishItem != null)
+        if (wishItem != null)
         {
             itemImage.setImageBitmap(wishItem.getPicture());
             name.append(": " + wishItem.getItemName());

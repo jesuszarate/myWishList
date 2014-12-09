@@ -16,6 +16,33 @@
         <activity
             android:name="edu.utah.cs4962.mywishlist.MainScreenActivity"
             android:label="@string/app_name" >
+
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
+        <activity
+            android:name="edu.utah.cs4962.mywishlist.myListActivity"
+            android:label="myList">
+        </activity>
+        <activity
+            android:name=".myNewWishItemActivity"
+            android:label="myNew List Item">
+        </activity>
+        <activity
+            android:name="edu.utah.cs4962.mywishlist.myWishItemActivity"
+            android:label="myWish Item">
+        </activity>
+        <activity
+            android:name="edu.utah.cs4962.mywishlist.SignupActivity"
+            android:label="myWish Item">
+        </activity>
+        <activity
+            android:name="edu.utah.cs4962.mywishlist.ImportBuddyListActivity"
+            android:label="Import Buddy List">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -42,25 +69,11 @@
                     android:pathPattern=".*\\.mwl"
                     />
             </intent-filter>
-        </activity>
-        <activity
-            android:name="edu.utah.cs4962.mywishlist.myListActivity"
-            android:label="myList">
-        </activity>
-        <activity
-            android:name=".myNewWishItemActivity"
-            android:label="myNew List Item">
-        </activity>
-        <activity
-            android:name="edu.utah.cs4962.mywishlist.myWishItemActivity"
-            android:label="myWish Item">
-        </activity>
-        <activity
-            android:name="edu.utah.cs4962.mywishlist.SignupActivity"
-            android:label="myWish Item">
+
         </activity>
     </application>
 
     <!--FILTERS-->
 
 </manifest>
+    <!--android:launchMode="singleTask"-->
