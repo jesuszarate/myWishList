@@ -41,7 +41,7 @@
         </activity>
         <activity
             android:name="edu.utah.cs4962.mywishlist.ImportBuddyListActivity"
-            android:label="Import Buddy List">
+            android:label="MyWishList">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

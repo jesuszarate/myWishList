@@ -5,13 +5,16 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -163,7 +166,13 @@ public class myListFragment extends Fragment implements ListAdapter
         int background_blue = res.getColor(R.color.background_light_blue);
         item.setBackgroundColor(background_blue);
 
-        String imageName = dataList.get(i).getImageName();//myWishList.getInstance().getWishItem(i).getImageName();
+        Uri uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+
+//        String s = getRealPathFromURI(getActivity(), uri);
+
+//        String string = getActivity().getExternalFilesDir(null).getAbsolutePath();
+
+        String imageName = dataList.get(i).getImageName();
         String imagePath = getImagePath(imageName);
 
         //Bitmap bitmap = getImage(imagePath);
@@ -183,7 +192,7 @@ public class myListFragment extends Fragment implements ListAdapter
         }
 
         TextView textView = new TextView(getActivity());
-        textView.setText(dataList.get(i).getLocationName());//myWishList.getInstance().getWishItem(i).getItemName());
+        textView.setText(dataList.get(i).getItemName());//myWishList.getInstance().getWishItem(i).getItemName());
         textView.setTextSize(20);
         textView.setTypeface(null, Typeface.BOLD_ITALIC);
         textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
@@ -196,6 +205,20 @@ public class myListFragment extends Fragment implements ListAdapter
         return item;
     }
 
+    public String getRealPathFromURI(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = { MediaStore.Images.Media.DATA };
+            cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
     @Override
     public int getItemViewType(int i)
     {
@@ -223,31 +246,34 @@ public class myListFragment extends Fragment implements ListAdapter
 
     private Bitmap getPic(String ImagePath)
     {
-        // Get the dimensions of the View
-        int targetW = 100;//mImageView.getWidth();
-        int targetH = 100;//mImageView.getHeight();
+        if (ImagePath != null)
+        {
+            // Get the dimensions of the View
+            int targetW = 100;//mImageView.getWidth();
+            int targetH = 100;//mImageView.getHeight();
 
-        // Get the dimensions of the bitmap
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(ImagePath, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
+            // Get the dimensions of the bitmap
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            bmOptions.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(ImagePath, bmOptions);
+            int photoW = bmOptions.outWidth;
+            int photoH = bmOptions.outHeight;
 
-        // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+            // Determine how much to scale down the image
+            int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
 
-        // Decode the image file into a Bitmap sized to fill the View
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-        bmOptions.inPurgeable = true;
+            // Decode the image file into a Bitmap sized to fill the View
+            bmOptions.inJustDecodeBounds = false;
+            bmOptions.inSampleSize = scaleFactor;
+            bmOptions.inPurgeable = true;
 
-        Bitmap bitmap = BitmapFactory.decodeFile(ImagePath, bmOptions);
+            Bitmap bitmap = BitmapFactory.decodeFile(ImagePath, bmOptions);
 
-        return bitmap;
-        //mImageView.setImageBitmap(bitmap);
+            return bitmap;
+            //mImageView.setImageBitmap(bitmap);
+        }
+        return null;
     }
-
     public Bitmap getImage(String imagePath)
     {
         BitmapFactory.Options options = new BitmapFactory.Options();

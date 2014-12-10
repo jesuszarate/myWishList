@@ -6,12 +6,14 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +29,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -79,6 +82,10 @@ public class myListActivity extends Activity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_share)
         {
+
+
+            //MediaStore.Images.Media.getBitmap(getContentResolver());//getContentResolver(), yourBitmap, yourTitle , yourDescription);
+
             //shareMyWishList(myWishList.getInstance().getWishList());
             shareMyWishList(myWishList.getInstance().toBuddy());
 
@@ -152,11 +159,11 @@ public class myListActivity extends Activity
             listFragment = new myListFragment();
 
             boolean myList = getIntent().getBooleanExtra(MainScreenActivity.MY_LIST_TYPE, true);
-            if(myList)
+            if (myList)
             {
                 listFragment.init(myListFragment.MY_LIST, 0);
-            }
-            else {
+            } else
+            {
                 int selectedItem = getIntent().getIntExtra(SecretSantaGroupFragment.SELECTED_BUDDY, 0);
                 listFragment.init(myListFragment.BUDDY_LIST, selectedItem);
             }
@@ -164,8 +171,7 @@ public class myListActivity extends Activity
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.add(11, listFragment);
             transaction.commit();
-        }
-        else if (getIntent().hasExtra(MainScreenActivity.SS_GROUP_TYPE))
+        } else if (getIntent().hasExtra(MainScreenActivity.SS_GROUP_TYPE))
         {
             secretSantaGroupFragment = new SecretSantaGroupFragment();
             secretSantaGroupFragment.init(SecretSantaGroupFragment.SECRET_SANTA_LIST);
@@ -174,8 +180,7 @@ public class myListActivity extends Activity
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.add(11, secretSantaGroupFragment);
             transaction.commit();
-        }
-        else if (getIntent().hasExtra(MainScreenActivity.BUDDY_LIST_TYPE))
+        } else if (getIntent().hasExtra(MainScreenActivity.BUDDY_LIST_TYPE))
         {
             secretSantaGroupFragment = new SecretSantaGroupFragment();
             secretSantaGroupFragment.init(SecretSantaGroupFragment.BUDDY_LIST);
@@ -227,8 +232,7 @@ public class myListActivity extends Activity
         if (getIntent().hasExtra(MainScreenActivity.SS_GROUP_TYPE))
         {
             titleView.setText("mySecret Santa Group");
-        }
-        else if(getIntent().hasExtra(MainScreenActivity.BUDDY_LIST_TYPE))
+        } else if (getIntent().hasExtra(MainScreenActivity.BUDDY_LIST_TYPE))
         {
             // Get the wish list extra
             titleView.setText("mySecret Buddy List");
@@ -273,24 +277,13 @@ public class myListActivity extends Activity
         sendEmail(noRecipients, file);
     }
 
-    private ArrayList<myWishItem> compressWishList(ArrayList<myWishItem> wishList)
-    {
-        ArrayList<myWishItem> list = new ArrayList<myWishItem>();
-        for (myWishItem item : wishList)
-        {
-            myWishItem tempItem = new myWishItem();
-            tempItem.setPicture(null);
-            tempItem.setWantLevel(item.getWantLevel());
-            tempItem.setImageName(item.getImageName());
-            tempItem.setPrice(item.getPrice());
-            tempItem.setLocationName(item.getLocationName());
-            tempItem.setOnSale(item.isOnSale());
 
-            list.add(tempItem);
-        }
-        return list;
-    }
-
+    /**
+     * TODO: ZIP UP THE FILE WITH THE BITMAP INFORMATION AND SEND THE ZIP WITH .mwl extension.
+     *
+     * @param recipients
+     * @param file
+     */
     private void sendEmail(String recipients, File file)
     {
         final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
@@ -441,4 +434,46 @@ public class myListActivity extends Activity
         openNewWishItemIntent.putExtra(IMAGE_PATH, imagePath);
         startActivityForResult(openNewWishItemIntent, NEW_ITEM_ADDED);
     }
+
+    private ArrayList<myWishItem> compressWishList(ArrayList<myWishItem> wishList)
+    {
+        ArrayList<myWishItem> list = new ArrayList<myWishItem>();
+        for (myWishItem item : wishList)
+        {
+            myWishItem tempItem = new myWishItem();
+            tempItem.setPicture(null);
+            tempItem.setWantLevel(item.getWantLevel());
+            tempItem.setImageName(item.getImageName());
+            tempItem.setPrice(item.getPrice());
+            tempItem.setLocationName(item.getLocationName());
+            tempItem.setOnSale(item.isOnSale());
+
+            //tempItem.setJSONBitmapString(getStringFromBitmap(item.getPicture()));
+
+            list.add(tempItem);
+        }
+        return list;
+    }
+
+    /**
+     * Create a string from a bitmap.
+     *
+     * I got this code snippet from the following website.
+     * Reference - http://mobile.cs.fsu.edu/converting-images-to-json-objects/
+     * @param bitmapPicture
+     * @return
+     */
+    private String getStringFromBitmap(Bitmap bitmapPicture)
+    {
+        final int COMPRESSION_QUALITY = 100;
+        String encodedImage;
+        ByteArrayOutputStream byteArrayBitmapStream = new ByteArrayOutputStream();
+        bitmapPicture.compress(Bitmap.CompressFormat.PNG, COMPRESSION_QUALITY,
+                byteArrayBitmapStream);
+        byte[] b = byteArrayBitmapStream.toByteArray();
+        encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
+        return encodedImage;
+    }
+
+
 }

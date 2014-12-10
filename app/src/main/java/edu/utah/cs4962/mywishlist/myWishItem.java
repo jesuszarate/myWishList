@@ -16,6 +16,18 @@ public class myWishItem
     private String imageName;
     private Bitmap picture;
 
+    private String JSONBitmapString;
+
+    public String getJSONBitmapString()
+    {
+        return JSONBitmapString;
+    }
+
+    public void setJSONBitmapString(String JSONBitmapString)
+    {
+        this.JSONBitmapString = JSONBitmapString;
+    }
+
     public Bitmap getPicture()
     {
         return picture;
