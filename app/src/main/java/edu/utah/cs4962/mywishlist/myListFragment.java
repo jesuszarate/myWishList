@@ -163,14 +163,13 @@ public class myListFragment extends Fragment implements ListAdapter
         LinearLayout item = new LinearLayout(getActivity());
         item.setOrientation(LinearLayout.HORIZONTAL);
         Resources res = getResources();
-        int background_blue = res.getColor(R.color.background_light_blue);
+        int background_blue = res.getColor(R.color.accent_green);
         item.setBackgroundColor(background_blue);
 
-        Uri uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+//        Uri uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
-//        String s = getRealPathFromURI(getActivity(), uri);
-
-//        String string = getActivity().getExternalFilesDir(null).getAbsolutePath();
+        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI.buildUpon().appendPath("IMAG0126").build();
+        String s = uri.getPath();//getRealPathFromURI(getActivity(), uri);
 
         String imageName = dataList.get(i).getImageName();
         String imagePath = getImagePath(imageName);
@@ -238,13 +237,13 @@ public class myListFragment extends Fragment implements ListAdapter
         return dataList.size() <= 0;
     }
 
-    public String getImagePath(String imageName)
+    public static String getImagePath(String imageName)
     {
         return Environment.getExternalStorageDirectory().getAbsolutePath() +
                 "/" + myListActivity.MY_WISH_LIST_DIR + "/" + imageName;
     }
 
-    private Bitmap getPic(String ImagePath)
+    public static Bitmap getPic(String ImagePath)
     {
         if (ImagePath != null)
         {

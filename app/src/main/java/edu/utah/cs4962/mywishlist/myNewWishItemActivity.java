@@ -105,10 +105,13 @@ public class myNewWishItemActivity extends Activity
                     File dir = Environment.getExternalStorageDirectory();
                     if (dir.exists())
                     {
+                        String regex = getString(R.string.image_regular_expression);
                         File from = new File(dir, myListActivity.MY_WISH_LIST_DIR + "/" + myListActivity.LATEST_IMAGE);
 
                         File to = new File(dir,
-                                myListActivity.MY_WISH_LIST_DIR + "/" + itemName.getText() + "_" + itemLocation.getText() + ".png");
+                                myListActivity.MY_WISH_LIST_DIR + "/" + regex + itemName.getText() +
+                                        "_" + itemLocation.getText() + regex + ".png");
+
                         if (from.exists())
                         {
                             from.renameTo(to);

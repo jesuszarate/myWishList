@@ -41,7 +41,7 @@ public class myWishItemActivity extends Activity
 
         // Set the color for the text.
         Resources res = getResources();
-        int background_blue = res.getColor(R.color.background_light_blue);
+        int background_blue = res.getColor(R.color.accent_green);
         int itemColor = res.getColor(R.color.primary_light_blue);
 
         Button getDirectionsButton = (Button) findViewById(R.id.directionsButton);
@@ -65,7 +65,11 @@ public class myWishItemActivity extends Activity
 
         if (wishItem != null)
         {
-            itemImage.setImageBitmap(wishItem.getPicture());
+            String imageName = wishItem.getImageName();
+            String imagePath = myListFragment.getImagePath(imageName);
+
+            itemImage.setImageBitmap(myListFragment.getPic(imagePath));
+
             name.append(": " + wishItem.getItemName());
             location.append(": " + wishItem.getLocationName());
             price.append(": " + wishItem.getPrice());

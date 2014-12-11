@@ -25,6 +25,7 @@ public class SignupActivity extends Activity
         TextView passwordLabel = (TextView) findViewById(R.id.passwordLabel);
         EditText passwordInput = (EditText) findViewById(R.id.passwordInput);
         Button   addBuddyButton = (Button) findViewById(R.id.addBuddyButton);
+        Button   addBuddyFromListButton = (Button) findViewById(R.id.addBuddyFromListButton);
 
         if (getIntent().hasExtra(myListActivity.SIGN_UP_RESULTS))
         {
@@ -48,6 +49,15 @@ public class SignupActivity extends Activity
 
                     closeActivity();
                 }
+            }
+        });
+
+        addBuddyFromListButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+
             }
         });
 

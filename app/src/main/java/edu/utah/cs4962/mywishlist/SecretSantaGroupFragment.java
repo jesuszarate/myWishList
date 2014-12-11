@@ -107,7 +107,11 @@ public class SecretSantaGroupFragment extends Fragment implements ListAdapter
     @Override
     public int getCount()
     {
-        return dataList.size();
+        if(dataList != null)
+        {
+            return dataList.size();
+        }
+        return 0;
     }
 
     @Override
@@ -135,8 +139,8 @@ public class SecretSantaGroupFragment extends Fragment implements ListAdapter
         textView.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL);
 
         Resources res = getResources();
-        int lighterBlue = res.getColor(R.color.accent_light_blue);
-        int darkerBlue = res.getColor(R.color.list_darker_blue);
+        int lighterBlue = res.getColor(R.color.accent_green);
+        int darkerBlue = res.getColor(R.color.accent_green);
 
 
         textView.setText(dataList.get(i).MemberName);

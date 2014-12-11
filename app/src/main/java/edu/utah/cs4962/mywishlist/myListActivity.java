@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
@@ -28,13 +30,28 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Created by Jesus Zarate on 11/25/14.
@@ -62,38 +79,38 @@ public class myListActivity extends Activity
     private ShareActionProvider mShareActionProvider;
 
 
-    //region Menu
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main_screen, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_share)
-        {
-
-
-            //MediaStore.Images.Media.getBitmap(getContentResolver());//getContentResolver(), yourBitmap, yourTitle , yourDescription);
-
-            //shareMyWishList(myWishList.getInstance().getWishList());
-            shareMyWishList(myWishList.getInstance().toBuddy());
-
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//    //region Menu
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu)
+//    {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_main_screen, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item)
+//    {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_share)
+//        {
+//
+//
+//            //MediaStore.Images.Media.getBitmap(getContentResolver());//getContentResolver(), yourBitmap, yourTitle , yourDescription);
+//
+//            //shareMyWishList(myWishList.getInstance().getWishList());
+//            shareMyWishList(myWishList.getInstance().toBuddy());
+//
+//            return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -145,10 +162,22 @@ public class myListActivity extends Activity
             }
         });
 
+        ImageView shareButton = new ImageView(this);
+        shareButton.setImageResource(R.drawable.share);
+        shareButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                shareMyWishList("", myWishList.getInstance().toBuddy());
+            }
+        });
+
         setHeaderTitle(titleView);
 
         titleLayout.addView(_addItemButton, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 10));
         titleLayout.addView(titleView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 90));
+        titleLayout.addView(shareButton, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 10));
         //endregion <Title>
 
 
@@ -214,7 +243,8 @@ public class myListActivity extends Activity
                         // Send the emails at this point to the group with their buddy.(Also clear the list)
                         //sendEmailsClass.sendEmails(randomGeneratedBuddies);
 
-                        sendEmail(randomGeneratedBuddies);
+                        sendEmails(randomGeneratedBuddies);
+                        //emailWithMultipleAttachments();
                     }
                 }
             });
@@ -239,7 +269,13 @@ public class myListActivity extends Activity
         }
     }
 
-    public void shareMyWishList(Buddy buddy)//ArrayList<myWishItem> wishList)
+    /**
+     * Given the email address whom the user wants to share the
+     * wish list with. It will email the list to that email address.
+     * @param emailAddress
+     * @param buddy
+     */
+    public void shareMyWishList(String emailAddress, Buddy buddy)//ArrayList<myWishItem> wishList)
     {
         buddy.wishList = compressWishList(buddy.wishList);
 
@@ -273,33 +309,41 @@ public class myListActivity extends Activity
             return;
         }
 
-        String noRecipients = "";
-        sendEmail(noRecipients, file);
+        String[] noRecipients = {emailAddress};
+        //sendEmail(noRecipients, file);
+
+        ArrayList<String> filePaths = new ArrayList<String>();
+
+        for(myWishItem wishItem : buddy.wishList)
+        {
+            filePaths.add(getImageFullPath(wishItem.getImageName()).getAbsolutePath());
+        }
+
+        filePaths.add(file.getAbsolutePath());
+
+        emailWithMultipleAttachments(noRecipients, filePaths);
     }
 
-
-    /**
-     * TODO: ZIP UP THE FILE WITH THE BITMAP INFORMATION AND SEND THE ZIP WITH .mwl extension.
-     *
-     * @param recipients
-     * @param file
-     */
-    private void sendEmail(String recipients, File file)
+    public void emailWithMultipleAttachments(String[] emailTo, ArrayList<String> filePaths)
     {
-        final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-        emailIntent.setType("application/mwl");
-
-        emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, recipients);
-        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, myListActivity.EXTRA_SUBJECT);
-        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, createMessageBody());
-
-        Uri uri = Uri.parse("file://" + file.getAbsolutePath());
-        emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
-
-        //startActivity(emailIntent);
-        startActivityForResult(Intent.createChooser(emailIntent,
-                        "Email custom data using..."),
-                REQUEST_SHARE_DATA);
+        //need to "send multiple" to get more than one attachment
+        final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+        emailIntent.setType("text/plain");
+        emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
+                emailTo);
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, myListActivity.EXTRA_SUBJECT);
+        emailIntent.putExtra(Intent.EXTRA_TEXT, createMessageBody());
+        //has to be an ArrayList
+        ArrayList<Uri> uris = new ArrayList<Uri>();
+        //convert from paths to Android friendly Parcelable Uri's
+        for (String file : filePaths)
+        {
+            File fileIn = new File(file);
+            Uri u = Uri.fromFile(fileIn);
+            uris.add(u);
+        }
+        emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+        startActivity(Intent.createChooser(emailIntent, "Send mail..."));
     }
 
     private String createMessageBody()
@@ -317,63 +361,36 @@ public class myListActivity extends Activity
         return message;
     }
 
-    public void sendEmail(HashMap<Buddy, Buddy> buddyHashMap)
+    public void sendEmails(HashMap<Buddy, Buddy> buddyHashMap)
     {
+        Iterator iterator = buddyHashMap.entrySet().iterator();
 
-        String recipient = "",
-                subject = "Sharing example",
-                message = "";
-
-        final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-        emailIntent.setType("message/rfc822");
-
-        emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{recipient});
-        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
-        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
-
-        // create attachment
-        String filename = "example.mytype";
-
-        // Create the correct file name.
-        File file = new File(getFilesDir(), filename);
-        FileWriter textWriter;
-
-        try
+        while (iterator.hasNext())
         {
-            textWriter = new FileWriter(file);
+            Map.Entry<Buddy, Buddy> pair = (Map.Entry)iterator.next();
+            Buddy santa = pair.getKey();
+            Buddy buddy = pair.getValue();
 
-            BufferedWriter bufferedWriter = new BufferedWriter(textWriter);
-
-            //TODO: Write the list right here.
-            String myWishList = gson.toJson("my_wish_list_goes_here");
-
-            bufferedWriter.write(myWishList);
-            bufferedWriter.close();
-        } catch (IOException e)
-        {
-            e.printStackTrace();
+            shareMyWishList(santa.EmailAddress, buddy);
+            //emailWithMultipleAttachments(new String[]{santa.EmailAddress}, gatherFiles(buddy));
         }
+    }
 
-        if (!file.exists() || !file.canRead())
+    /**
+     * Given a buddy, will return a list of paths of every image
+     * in the buddy's wish list.
+     * @param buddy
+     * @return
+     */
+    private ArrayList<String> gatherFiles(Buddy buddy)
+    {
+        ArrayList<String> filePaths = new ArrayList<String>();
+
+        for(myWishItem wishItem : buddy.wishList)
         {
-            Toast.makeText(this, "Problem creating attachment",
-                    Toast.LENGTH_SHORT).show();
-            return;
+            filePaths.add(getImageFullPath(wishItem.getImageName()).getAbsolutePath());
         }
-
-        Uri uri = Uri.parse("file://" + file.getAbsolutePath());
-        emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
-
-        startActivityForResult(Intent.createChooser(emailIntent,
-                        "Email custom data using..."),
-                REQUEST_SHARE_DATA);
-
-//
-//        Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-//                "mailto", "abc@gmail.com", null));
-//        emailIntent.putExtra(Intent.EXTRA_SUBJECT, EXTRA_SUBJECT);
-//
-//        startActivity(Intent.createChooser(emailIntent, "Send email..."));
+        return filePaths;
     }
 
     private void openAddMemberActivity(Context context)
@@ -447,6 +464,7 @@ public class myListActivity extends Activity
             tempItem.setPrice(item.getPrice());
             tempItem.setLocationName(item.getLocationName());
             tempItem.setOnSale(item.isOnSale());
+            tempItem.setItemName(item.getItemName());
 
             //tempItem.setJSONBitmapString(getStringFromBitmap(item.getPicture()));
 
@@ -455,25 +473,12 @@ public class myListActivity extends Activity
         return list;
     }
 
-    /**
-     * Create a string from a bitmap.
-     *
-     * I got this code snippet from the following website.
-     * Reference - http://mobile.cs.fsu.edu/converting-images-to-json-objects/
-     * @param bitmapPicture
-     * @return
-     */
-    private String getStringFromBitmap(Bitmap bitmapPicture)
+    public File getImageFullPath(String imageName)
     {
-        final int COMPRESSION_QUALITY = 100;
-        String encodedImage;
-        ByteArrayOutputStream byteArrayBitmapStream = new ByteArrayOutputStream();
-        bitmapPicture.compress(Bitmap.CompressFormat.PNG, COMPRESSION_QUALITY,
-                byteArrayBitmapStream);
-        byte[] b = byteArrayBitmapStream.toByteArray();
-        encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
-        return encodedImage;
+        File dir = Environment.getExternalStorageDirectory();
+
+        File imageFile = new File(dir, myListActivity.MY_WISH_LIST_DIR + "/" + imageName);
+
+        return imageFile;
     }
-
-
 }
