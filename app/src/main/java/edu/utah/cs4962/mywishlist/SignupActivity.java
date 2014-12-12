@@ -1,6 +1,7 @@
 package edu.utah.cs4962.mywishlist;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -22,15 +23,12 @@ public class SignupActivity extends Activity
 
         final EditText userName = (EditText) findViewById(R.id.userNameInputText);
         final EditText emailAddress = (EditText) findViewById(R.id.emailAddress);
-        TextView passwordLabel = (TextView) findViewById(R.id.passwordLabel);
-        EditText passwordInput = (EditText) findViewById(R.id.passwordInput);
-        Button   addBuddyButton = (Button) findViewById(R.id.addBuddyButton);
-        Button   addBuddyFromListButton = (Button) findViewById(R.id.addBuddyFromListButton);
+        Button addBuddyButton = (Button) findViewById(R.id.addBuddyButton);
+        Button addBuddyFromListButton = (Button) findViewById(R.id.addBuddyFromListButton);
 
-        if (getIntent().hasExtra(myListActivity.SIGN_UP_RESULTS))
+        if (getIntent().hasExtra(MainScreenActivity.BUDDY_LIST_TYPE))
         {
-            passwordLabel.setVisibility(View.INVISIBLE);
-            passwordInput.setVisibility(View.INVISIBLE);
+            addBuddyFromListButton.setVisibility(View.GONE);
         }
 
         addBuddyButton.setOnClickListener(new View.OnClickListener()
@@ -44,8 +42,18 @@ public class SignupActivity extends Activity
                     newBuddy.EmailAddress = emailAddress.getText().toString();
                     newBuddy.MemberName = userName.getText().toString();
 
-                    // Add item to the GroupMemebers list
-                    GroupMemebers.getInstance().addBuddy(newBuddy);
+                    //If this activity was opened from the secret santa activity
+                    if (getIntent().hasExtra(MainScreenActivity.SS_GROUP_TYPE))
+                    {
+                        // Add item to the GroupMembers list
+                        GroupMemebers.getInstance().addBuddy(newBuddy);
+                    }
+
+                    // else if the activity was opened from the buddy activity
+                    else if (getIntent().hasExtra(MainScreenActivity.BUDDY_LIST_TYPE))
+                    {
+                        myBuddyList.getInstance().setBuddy(newBuddy);
+                    }
 
                     closeActivity();
                 }
@@ -57,10 +65,26 @@ public class SignupActivity extends Activity
             @Override
             public void onClick(View view)
             {
-
+                openBuddySelectorActivity();
             }
         });
+    }
 
+    public static final int BUDDY_SELECTOR = 18;
+    private void openBuddySelectorActivity()
+    {
+        Intent buddySelector = new Intent(this, BuddySelectorActivity.class);
+
+        startActivityForResult(buddySelector, BUDDY_SELECTOR);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if(requestCode == BUDDY_SELECTOR && resultCode == RESULT_OK )
+        {
+            closeActivity();
+        }
     }
 
     private void closeActivity()

@@ -10,8 +10,8 @@ public class myWishList
 
     private ArrayList<myWishItem> wishList = new ArrayList<myWishItem>();
 
-    private String userName;
-    private String emailAddress;
+    private String userName = "JayJay";
+    private String emailAddress = "jay8chuy@gmail.com";
 
     private static myWishList _instance = null;
 

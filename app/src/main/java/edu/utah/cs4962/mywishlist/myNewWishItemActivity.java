@@ -71,12 +71,14 @@ public class myNewWishItemActivity extends Activity
         {
             imagePath = getIntent().getStringExtra(myListActivity.IMAGE_PATH);
 
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
+//            BitmapFactory.Options options = new BitmapFactory.Options();
+//            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+//            Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
+            Bitmap bitmap = myListFragment.getPic(imagePath);
             imageView.setImageBitmap(bitmap);
 
-            newWishItem.setPicture(bitmap);
+            //newWishItem.setPicture(bitmap);
+
             //Bitmap image = (Bitmap) getIntent().getBundleExtra(myListActivity.BITMAP).get("data");
             //imageView.setImageBitmap(image);
         }

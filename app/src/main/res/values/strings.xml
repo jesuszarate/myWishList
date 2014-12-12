@@ -14,5 +14,8 @@
     <string name="imageAddedMessage">Image has been added to MyWishList app!</string>
     <string name="AddFromBuddyList">Add from buddy list</string>
     <string name="AddBuddyList">Add buddy</string>
+    <string name="selectABuddy">Select A Buddy</string>
+    <string name="add">Add</string>
+    <string name="assignSecretBuddies">Assign Secret Buddies</string>
 
 </resources>

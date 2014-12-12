@@ -1,9 +1,14 @@
 package edu.utah.cs4962.mywishlist;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -25,19 +30,17 @@ public class myWishItemActivity extends Activity
 
         setContentView(R.layout.my_wish_item);
 
-        if(getIntent().hasExtra(myListFragment.BUDDY_ID) && getIntent().hasExtra(myListFragment.ITEM_ID))
+        if (getIntent().hasExtra(myListFragment.BUDDY_ID) && getIntent().hasExtra(myListFragment.ITEM_ID))
         {
             int itemId = getIntent().getExtras().getInt(myListFragment.ITEM_ID);
             int buddyId = getIntent().getExtras().getInt(myListFragment.BUDDY_ID);
 
             wishItem = myBuddyList.getInstance().getBuddy(buddyId).wishList.get(itemId);
-        }
-        else if (getIntent().hasExtra(myListFragment.ITEM_ID))
+        } else if (getIntent().hasExtra(myListFragment.ITEM_ID))
         {
             int id = getIntent().getExtras().getInt(myListFragment.ITEM_ID);
             wishItem = myWishList.getInstance().getWishItem(id);
         }
-
 
         // Set the color for the text.
         Resources res = getResources();
@@ -48,6 +51,14 @@ public class myWishItemActivity extends Activity
         getDirectionsButton.setText(timeToDestination + ": Get Directions");
         getDirectionsButton.setBackgroundColor(Color.TRANSPARENT);
         getDirectionsButton.setTextColor(background_blue);
+        getDirectionsButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+
+            }
+        });
 
         ImageView itemImage = (ImageView) findViewById(R.id.imageView1);
         TextView name = (TextView) findViewById(R.id.itemName1);

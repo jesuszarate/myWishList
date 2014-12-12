@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.DataSetObserver;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -37,6 +38,9 @@ public class SecretSantaGroupFragment extends Fragment implements ListAdapter
     {
         ssGroupListView = new ListView(getActivity());
         ssGroupListView.setAdapter(this);
+        ssGroupListView.setDividerHeight(10);
+        ssGroupListView.setBackgroundColor(getResources().getColor(R.color.green_A400));
+
 
         ssGroupListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
@@ -143,9 +147,12 @@ public class SecretSantaGroupFragment extends Fragment implements ListAdapter
         int darkerBlue = res.getColor(R.color.accent_green);
 
 
-        textView.setText(dataList.get(i).MemberName);
-        textView.setTextSize(30);
-        textView.setHeight(50);
+        textView.setText("\n"+
+                dataList.get(i).MemberName +
+                        "\n");
+        textView.setTypeface(null, Typeface.BOLD_ITALIC);
+        textView.setTextSize(20);
+        //textView.setHeight(50);
         textView.setBackgroundColor((i % 2) == 0 ? lighterBlue : darkerBlue);
         return textView;
     }

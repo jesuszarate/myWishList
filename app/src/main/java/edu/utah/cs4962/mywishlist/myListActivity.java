@@ -5,19 +5,15 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Base64;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -30,28 +26,14 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
 
 /**
  * Created by Jesus Zarate on 11/25/14.
@@ -61,6 +43,7 @@ public class myListActivity extends Activity
     static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 15;
     static final int NEW_ITEM_ADDED = 16;
     static final int MEMBER_ADDED = 17;
+    static final int BUDDY_SELECTED = 19;
     private static final int REQUEST_SHARE_DATA = 18;
 
     myListFragment listFragment;
@@ -118,7 +101,6 @@ public class myListActivity extends Activity
         super.onCreate(savedInstanceState);
         LinearLayout rootLayout = new LinearLayout(this);
         rootLayout.setOrientation(LinearLayout.VERTICAL);
-        rootLayout.setId(11);
 
         //region <Title>
         LinearLayout titleLayout = new LinearLayout(this);
@@ -153,10 +135,14 @@ public class myListActivity extends Activity
                 }
 
                 // SECRET SANTA VIEW
-                else if (getIntent().hasExtra(MainScreenActivity.SS_GROUP_TYPE)
-                        || getIntent().hasExtra(MainScreenActivity.BUDDY_LIST_TYPE))
+                else if (getIntent().hasExtra(MainScreenActivity.SS_GROUP_TYPE))
+
                 {
-                    openAddMemberActivity(myListActivity.this);
+                    openAddMemberActivity(myListActivity.this, MainScreenActivity.SS_GROUP_TYPE);
+                }
+                else if (getIntent().hasExtra(MainScreenActivity.BUDDY_LIST_TYPE))
+                {
+                    openAddMemberActivity(myListActivity.this, MainScreenActivity.BUDDY_LIST_TYPE);
                 }
 
             }
@@ -180,8 +166,9 @@ public class myListActivity extends Activity
         titleLayout.addView(shareButton, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 10));
         //endregion <Title>
 
-
         LinearLayout listLayout = new LinearLayout(this);
+        listLayout.setOrientation(LinearLayout.VERTICAL);
+        listLayout.setId(11);
 
         if (getIntent().hasExtra(MainScreenActivity.MY_LIST_TYPE))
         {
@@ -221,14 +208,17 @@ public class myListActivity extends Activity
         }
 
         rootLayout.addView(titleLayout);
-        rootLayout.addView(listLayout);
+
 
         sendEmailsClass = new SendEmailsClass(this);
+
         // Button to assign secret buddies
         if (getIntent().hasExtra(MainScreenActivity.SS_GROUP_TYPE))
         {
             Button assignBuddiesButton = new Button(this);
-            assignBuddiesButton.setText("Assign Secret Buddies");
+            assignBuddiesButton.setText(getString(R.string.assignSecretBuddies));
+            assignBuddiesButton.setBackgroundColor(getResources().getColor(R.color.background_light_blue));
+            assignBuddiesButton.setTextColor(Color.WHITE);
 
             assignBuddiesButton.setOnClickListener(new View.OnClickListener()
             {
@@ -249,10 +239,12 @@ public class myListActivity extends Activity
                 }
             });
 
-            rootLayout.addView(assignBuddiesButton, new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            LinearLayout.LayoutParams bparams = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            bparams.setMargins(5,5,5,5);
+            rootLayout.addView(assignBuddiesButton, bparams);
         }
-
+        rootLayout.addView(listLayout);
         setContentView(rootLayout);
     }
 
@@ -272,6 +264,7 @@ public class myListActivity extends Activity
     /**
      * Given the email address whom the user wants to share the
      * wish list with. It will email the list to that email address.
+     *
      * @param emailAddress
      * @param buddy
      */
@@ -314,17 +307,17 @@ public class myListActivity extends Activity
 
         ArrayList<String> filePaths = new ArrayList<String>();
 
-        for(myWishItem wishItem : buddy.wishList)
+        for (myWishItem wishItem : buddy.wishList)
         {
             filePaths.add(getImageFullPath(wishItem.getImageName()).getAbsolutePath());
         }
 
         filePaths.add(file.getAbsolutePath());
 
-        emailWithMultipleAttachments(noRecipients, filePaths);
+        emailWithMultipleAttachments(buddy, noRecipients, filePaths);
     }
 
-    public void emailWithMultipleAttachments(String[] emailTo, ArrayList<String> filePaths)
+    public void emailWithMultipleAttachments(Buddy buddy, String[] emailTo, ArrayList<String> filePaths)
     {
         //need to "send multiple" to get more than one attachment
         final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
@@ -332,7 +325,7 @@ public class myListActivity extends Activity
         emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
                 emailTo);
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, myListActivity.EXTRA_SUBJECT);
-        emailIntent.putExtra(Intent.EXTRA_TEXT, createMessageBody());
+        emailIntent.putExtra(Intent.EXTRA_TEXT, createMessageBody(buddy));
         //has to be an ArrayList
         ArrayList<Uri> uris = new ArrayList<Uri>();
         //convert from paths to Android friendly Parcelable Uri's
@@ -346,10 +339,11 @@ public class myListActivity extends Activity
         startActivity(Intent.createChooser(emailIntent, "Send mail..."));
     }
 
-    private String createMessageBody()
+    private String createMessageBody(Buddy buddy)
     {
         String message = "";
-        for (myWishItem item : myWishList.getInstance().getWishList())
+        //for (myWishItem item : myWishList.getInstance().getWishList())
+        for(myWishItem item : buddy.wishList)
         {
             message += item.getItemName() + "\n";
             message += "- Location: " + item.getLocationName() + "\n";
@@ -367,7 +361,7 @@ public class myListActivity extends Activity
 
         while (iterator.hasNext())
         {
-            Map.Entry<Buddy, Buddy> pair = (Map.Entry)iterator.next();
+            Map.Entry<Buddy, Buddy> pair = (Map.Entry) iterator.next();
             Buddy santa = pair.getKey();
             Buddy buddy = pair.getValue();
 
@@ -379,6 +373,7 @@ public class myListActivity extends Activity
     /**
      * Given a buddy, will return a list of paths of every image
      * in the buddy's wish list.
+     *
      * @param buddy
      * @return
      */
@@ -386,17 +381,28 @@ public class myListActivity extends Activity
     {
         ArrayList<String> filePaths = new ArrayList<String>();
 
-        for(myWishItem wishItem : buddy.wishList)
+        for (myWishItem wishItem : buddy.wishList)
         {
             filePaths.add(getImageFullPath(wishItem.getImageName()).getAbsolutePath());
         }
         return filePaths;
     }
 
-    private void openAddMemberActivity(Context context)
+    private void openAddMemberActivity(Context context, String ListType)
     {
         Intent addMemberIntent = new Intent(context, SignupActivity.class);
         addMemberIntent.putExtra(SIGN_UP_RESULTS, true);
+
+        if (ListType.equals(MainScreenActivity.SS_GROUP_TYPE))
+        {
+            addMemberIntent.putExtra(MainScreenActivity.SS_GROUP_TYPE, true);
+        }
+
+        else if (ListType.equals(MainScreenActivity.BUDDY_LIST_TYPE))
+        {
+            addMemberIntent.putExtra(MainScreenActivity.BUDDY_LIST_TYPE, true);
+        }
+
         startActivityForResult(addMemberIntent, MEMBER_ADDED);
     }
 
@@ -441,8 +447,6 @@ public class myListActivity extends Activity
             }
         }
     }
-
-    public static final String BITMAP = "bitmap";
 
     public void openNewWishItemActivity(Context context)
     {

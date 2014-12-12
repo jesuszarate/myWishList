@@ -74,7 +74,7 @@ public class myListFragment extends Fragment implements ListAdapter
     {
         wishItemList = new ListView(getActivity());
         wishItemList.setAdapter(this);
-        wishItemList.setDividerHeight(10);
+        wishItemList.setDividerHeight(20);
 
         pictures = new HashMap<String, Bitmap>();
 
@@ -136,7 +136,11 @@ public class myListFragment extends Fragment implements ListAdapter
     @Override
     public int getCount()
     {
-        return dataList.size();
+        if(dataList != null)
+        {
+            return dataList.size();
+        }
+        return 0;
     }
 
     @Override
@@ -166,18 +170,10 @@ public class myListFragment extends Fragment implements ListAdapter
         int background_blue = res.getColor(R.color.accent_green);
         item.setBackgroundColor(background_blue);
 
-//        Uri uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-
-        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI.buildUpon().appendPath("IMAG0126").build();
-        String s = uri.getPath();//getRealPathFromURI(getActivity(), uri);
-
         String imageName = dataList.get(i).getImageName();
         String imagePath = getImagePath(imageName);
 
-        //Bitmap bitmap = getImage(imagePath);
-
         ImageView imagePreview = new ImageView(getActivity());
-        //imagePreview.setImageBitmap(bitmap);
 
         if (!pictures.containsKey(imageName))
         {
@@ -208,7 +204,7 @@ public class myListFragment extends Fragment implements ListAdapter
         Cursor cursor = null;
         try {
             String[] proj = { MediaStore.Images.Media.DATA };
-            cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+            cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
             int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             cursor.moveToFirst();
             return cursor.getString(column_index);

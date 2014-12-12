@@ -3,6 +3,8 @@
     package="edu.utah.cs4962.mywishlist" >
 
 
+    
+
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -30,6 +32,7 @@
         <activity
             android:name=".myNewWishItemActivity"
             android:label="myNew List Item">
+            <!--android:windowSoftInputMode="adjustPan|adjustResize">-->
         </activity>
         <activity
             android:name="edu.utah.cs4962.mywishlist.myWishItemActivity"
@@ -38,6 +41,11 @@
         <activity
             android:name="edu.utah.cs4962.mywishlist.SignupActivity"
             android:label="myWish Item">
+            <!--android:windowSoftInputMode="adjustResize" >-->
+        </activity>
+        <activity
+            android:name="edu.utah.cs4962.mywishlist.BuddySelectorActivity"
+            android:label="Select Buddy">
         </activity>
         <activity
             android:name="edu.utah.cs4962.mywishlist.ImportBuddyListActivity"
@@ -79,6 +87,7 @@
                     android:pathPattern=".*\\.jpg"
                     />
             </intent-filter>
+
         </activity>
     </application>
 

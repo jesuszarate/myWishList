@@ -3,15 +3,14 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:weightSum="1">
+              >
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="0.10"
-        android:weightSum="1"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:layout_weight="15"
         android:background="@color/primary_light_blue"
         >
 
@@ -30,8 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0.89"
-        android:weightSum="1">
+        android:layout_weight="90">
 
         <TextView
             android:layout_width="match_parent"
@@ -45,7 +43,7 @@
             android:layout_marginTop="35dp"
             />
 
-        <!--Edit Text-->
+        <!--EditText-->
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -66,28 +64,11 @@
             android:layout_marginBottom="15dp"
             android:layout_marginLeft="10dp"/>
 
+        <!--EditText-->
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/emailAddress"
-            android:textSize="20dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="10dp"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Email Password"
-            android:id="@+id/passwordLabel"
-            android:textSize="20dp"
-            android:textStyle="bold"
-            android:layout_marginBottom="15dp"
-            android:layout_marginLeft="10dp"/>
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/passwordInput"
             android:textSize="20dp"
             android:layout_marginBottom="5dp"
             android:layout_marginLeft="10dp"/>

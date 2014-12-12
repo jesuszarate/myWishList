@@ -36,6 +36,11 @@ public class GroupMemebers
         ssGroupList.add(buddy);
     }
 
+    public void addAllBuddies(ArrayList<Buddy> Buddies)
+    {
+        ssGroupList.addAll(Buddies);
+    }
+
     public void removeBuddy(Buddy buddy)
     {
         ssGroupList.remove(buddy);

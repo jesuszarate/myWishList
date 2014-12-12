@@ -9,7 +9,9 @@
                 tools:context=".MainScreenActivity"
                 android:id="@+id/rootLayout"
                 android:weightSum="1"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:background="@color/accent_green"
+    >
 
     <Space
         android:layout_width="match_parent"
@@ -24,13 +26,18 @@
         android:textStyle="bold|italic"
         android:textSize="35dp"
         android:textAlignment="center"
-        android:gravity="center_horizontal|center_vertical"/>
+        android:gravity="center_horizontal|center_vertical"
+        android:textColor="@color/background_light_blue"
+        />
 
         <Button
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:text="myWish List"
         android:id="@+id/myWishListButton"
+        android:background="@color/background_light_blue"
+        android:textColor="#ffffff"
+        android:layout_margin="3dp"
         />
 
     <Button
@@ -38,6 +45,9 @@
         android:layout_height="80dp"
         android:text="mySecret \n Santa Group"
         android:id="@+id/mySecretSantaGroup"
+        android:background="@color/background_light_blue"
+        android:textColor="#ffffff"
+        android:layout_margin="3dp"
         />
 
     <Space
@@ -52,5 +62,8 @@
         android:text="mySecret \n Buddies"
         android:id="@+id/mySecretBuddiesButton"
         android:layout_gravity="center_horizontal"
+        android:background="@color/background_light_blue"
+        android:textColor="#ffffff"
+        android:layout_margin="3dp"
         />
 </LinearLayout>
