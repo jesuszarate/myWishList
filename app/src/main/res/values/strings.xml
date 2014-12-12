@@ -17,5 +17,7 @@
     <string name="selectABuddy">Select A Buddy</string>
     <string name="add">Add</string>
     <string name="assignSecretBuddies">Assign Secret Buddies</string>
+    <string name="GetDirections">Get Directions</string>
+    <string name="AddNewItem">Add New Item</string>
 
 </resources>

@@ -141,19 +141,19 @@ public class SecretSantaGroupFragment extends Fragment implements ListAdapter
     {
         TextView textView = new TextView(getActivity());
         textView.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL);
+        textView.setBackgroundResource(R.drawable.list_item);
 
         Resources res = getResources();
-        int lighterBlue = res.getColor(R.color.accent_green);
-        int darkerBlue = res.getColor(R.color.accent_green);
-
+//        int lighterBlue = res.getColor(R.color.accent_green);
+//        int darkerBlue = res.getColor(R.color.accent_green);
 
         textView.setText("\n"+
                 dataList.get(i).MemberName +
                         "\n");
         textView.setTypeface(null, Typeface.BOLD_ITALIC);
         textView.setTextSize(20);
-        //textView.setHeight(50);
-        textView.setBackgroundColor((i % 2) == 0 ? lighterBlue : darkerBlue);
+
+        //textView.setBackgroundColor((i % 2) == 0 ? lighterBlue : darkerBlue);
         return textView;
     }
 
@@ -174,6 +174,4 @@ public class SecretSantaGroupFragment extends Fragment implements ListAdapter
     {
      return dataList.size() <= 0;
     }
-
-
 }

@@ -64,8 +64,9 @@ public class BuddySelectorActivity extends Activity
 
         Button addButton = new Button(this);
         addButton.setText(getString(R.string.add));
-        addButton.setBackgroundColor(getResources().getColor(R.color.background_light_blue));
+        addButton.setBackgroundResource(R.drawable.button_custom);
         addButton.setTextColor(Color.WHITE);
+        addButton.setPadding(5,5,5,5);
         addButton.setOnClickListener(new View.OnClickListener()
         {
             @Override

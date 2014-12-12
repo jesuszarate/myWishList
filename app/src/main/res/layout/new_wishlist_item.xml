@@ -41,7 +41,7 @@
 
             />
 
-        <!--Edit Text-->
+        <!--EditText-->
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
             android:layout_marginBottom="5dp"
             android:layout_marginLeft="10dp"/>
 
-        <!--Edit Text-->
+        <!--EditText-->
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -99,7 +99,7 @@
                 android:textSize="20dp"
                 android:textStyle="bold"/>
 
-                <!--Edit Text-->
+                <!--EditText-->
                 <EditText
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -149,9 +149,12 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add New Item"
+        android:text="@string/AddNewItem"
         android:layout_gravity="bottom|center_horizontal"
         android:id="@+id/addNewItemButton"
+        android:background="@drawable/button_custom"
+        android:textColor="#ffffff"
+        android:padding="5dp"
         />
 
 </LinearLayout>

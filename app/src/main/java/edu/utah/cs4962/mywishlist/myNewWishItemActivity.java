@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Space;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 
@@ -39,12 +40,17 @@ public class myNewWishItemActivity extends Activity
 
     Button addNewItemButton;
 
+
+    private double latitude;
+    private double longitude;
+
     //region Listeners
 
     public interface OnNewItemAddedListener
     {
         public void OnNewItemAdded(myNewWishItemActivity myNewWishItemActivity);
     }
+
     OnNewItemAddedListener _onNewItemAddedListener = null;
 
     public void setOnNewItemAddedListener(OnNewItemAddedListener onNewItemAddedListener)
@@ -69,18 +75,23 @@ public class myNewWishItemActivity extends Activity
 
         if (getIntent().hasExtra(myListActivity.IMAGE_PATH))
         {
+            // Get the coordinates of the location where the image was taken
+            GPSTracker gpsTracker = new GPSTracker(myNewWishItemActivity.this);
+
+            if (gpsTracker.canGetLocation())
+            {
+                latitude = gpsTracker.getLatitude();
+                longitude = gpsTracker.getLongitude();
+
+                Toast.makeText(getApplicationContext(), "Latitude: " + latitude +
+                        "\nLongitude: " + longitude, Toast.LENGTH_SHORT).show();
+            }
+
+            // Set the image taken to the item preview
             imagePath = getIntent().getStringExtra(myListActivity.IMAGE_PATH);
 
-//            BitmapFactory.Options options = new BitmapFactory.Options();
-//            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-//            Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
             Bitmap bitmap = myListFragment.getPic(imagePath);
             imageView.setImageBitmap(bitmap);
-
-            //newWishItem.setPicture(bitmap);
-
-            //Bitmap image = (Bitmap) getIntent().getBundleExtra(myListActivity.BITMAP).get("data");
-            //imageView.setImageBitmap(image);
         }
 
         itemPrice = (EditText) findViewById(R.id.itemPriceInput);
@@ -90,6 +101,7 @@ public class myNewWishItemActivity extends Activity
         //region <Add New Item Button>
         addNewItemButton = (Button) findViewById(R.id.addNewItemButton);
 
+        // Add the new item to the user's list.
         addNewItemButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -101,8 +113,14 @@ public class myNewWishItemActivity extends Activity
                     newWishItem.setItemName(itemName.getText().toString());
                     newWishItem.setLocationName(itemLocation.getText().toString());
                     newWishItem.setPrice(Double.parseDouble(itemPrice.getText().toString()));
-                    newWishItem.setWantLevel(itemWantLevel.getProgress()/10);
+                    newWishItem.setWantLevel(itemWantLevel.getProgress() / 10);
                     newWishItem.setOnSale(itemOnSale.isChecked());
+
+                    myWishItem.Coordinates coordinates = new myWishItem.Coordinates();
+                    coordinates.latidude = latitude;
+                    coordinates.longitude = longitude;
+                    newWishItem.setCoordinates(coordinates);
+
 
                     File dir = Environment.getExternalStorageDirectory();
                     if (dir.exists())

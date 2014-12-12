@@ -115,7 +115,8 @@ public class BuddySelectorFragment extends Fragment implements ListAdapter
         item.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
         Resources res = getResources();
         int background_blue = res.getColor(R.color.accent_green);
-        item.setBackgroundColor(background_blue);
+        //item.setBackgroundColor(background_blue);
+        item.setBackgroundResource(R.drawable.list_item);
 
         TextView textView = new TextView(getActivity());
         textView.setText("\n" +

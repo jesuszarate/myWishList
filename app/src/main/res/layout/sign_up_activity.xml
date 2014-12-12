@@ -87,6 +87,10 @@
             android:text="@string/AddBuddyList"
             android:layout_gravity="bottom|center_horizontal"
             android:id="@+id/addBuddyButton"
+            android:background="@drawable/button_custom"
+            android:textColor="#ffffff"
+            android:layout_marginRight="10dp"
+            android:padding="5dp"
             />
 
         <Button
@@ -95,6 +99,9 @@
             android:text="@string/AddFromBuddyList"
             android:layout_gravity="bottom|center_horizontal"
             android:id="@+id/addBuddyFromListButton"
+            android:background="@drawable/button_custom"
+            android:textColor="#ffffff"
+            android:padding="5dp"
             />
     </LinearLayout>
 </LinearLayout>

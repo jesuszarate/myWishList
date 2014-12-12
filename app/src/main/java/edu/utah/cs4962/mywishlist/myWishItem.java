@@ -108,9 +108,9 @@ public class myWishItem
         this.wantLevel = wantLevel;
     }
 
-    class Coordinates
+    public static class Coordinates
     {
-        float latidude;
-        float longitude;
+        double latidude;
+        double longitude;
     }
 }

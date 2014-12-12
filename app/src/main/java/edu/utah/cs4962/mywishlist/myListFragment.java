@@ -168,7 +168,8 @@ public class myListFragment extends Fragment implements ListAdapter
         item.setOrientation(LinearLayout.HORIZONTAL);
         Resources res = getResources();
         int background_blue = res.getColor(R.color.accent_green);
-        item.setBackgroundColor(background_blue);
+        item.setBackgroundResource(R.drawable.list_item);
+        //item.setBackgroundColor(background_blue);
 
         String imageName = dataList.get(i).getImageName();
         String imagePath = getImagePath(imageName);

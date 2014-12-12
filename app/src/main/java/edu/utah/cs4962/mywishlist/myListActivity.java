@@ -3,12 +3,14 @@ package edu.utah.cs4962.mywishlist;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -33,6 +35,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -61,40 +64,6 @@ public class myListActivity extends Activity
     Gson gson = new Gson();
     private ShareActionProvider mShareActionProvider;
 
-
-//    //region Menu
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu)
-//    {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_main_screen, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item)
-//    {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_share)
-//        {
-//
-//
-//            //MediaStore.Images.Media.getBitmap(getContentResolver());//getContentResolver(), yourBitmap, yourTitle , yourDescription);
-//
-//            //shareMyWishList(myWishList.getInstance().getWishList());
-//            shareMyWishList(myWishList.getInstance().toBuddy());
-//
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -119,7 +88,9 @@ public class myListActivity extends Activity
         titleView.setTextColor(pink);
 
         _addItemButton = new ImageButton(this);
-        _addItemButton.setImageResource(R.drawable.plus_sign);
+        //_addItemButton.setImageResource(R.drawable.plus_sign);
+        //_addItemButton.setBackground(getResources().getDrawable(R.drawable.add_button));
+        _addItemButton.setImageResource(R.drawable.add_button);
         _addItemButton.setBackgroundColor(Color.TRANSPARENT);
         _addItemButton.setOnClickListener(new View.OnClickListener()
         {
@@ -149,7 +120,8 @@ public class myListActivity extends Activity
         });
 
         ImageView shareButton = new ImageView(this);
-        shareButton.setImageResource(R.drawable.share);
+        shareButton.setImageResource(R.drawable.share_button);
+        shareButton.setBackgroundColor(Color.TRANSPARENT);
         shareButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -217,8 +189,10 @@ public class myListActivity extends Activity
         {
             Button assignBuddiesButton = new Button(this);
             assignBuddiesButton.setText(getString(R.string.assignSecretBuddies));
-            assignBuddiesButton.setBackgroundColor(getResources().getColor(R.color.background_light_blue));
+            //assignBuddiesButton.setBackgroundColor(getResources().getColor(R.color.background_light_blue));
+            assignBuddiesButton.setBackgroundResource(R.drawable.button_custom);
             assignBuddiesButton.setTextColor(Color.WHITE);
+            assignBuddiesButton.setPadding(5,5,5,5);
 
             assignBuddiesButton.setOnClickListener(new View.OnClickListener()
             {
@@ -234,6 +208,8 @@ public class myListActivity extends Activity
                         //sendEmailsClass.sendEmails(randomGeneratedBuddies);
 
                         sendEmails(randomGeneratedBuddies);
+
+                        GroupMemebers.getInstance().clearList();
                         //emailWithMultipleAttachments();
                     }
                 }
@@ -241,7 +217,7 @@ public class myListActivity extends Activity
 
             LinearLayout.LayoutParams bparams = new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            bparams.setMargins(5,5,5,5);
+            bparams.setMargins(10,10,10,10);
             rootLayout.addView(assignBuddiesButton, bparams);
         }
         rootLayout.addView(listLayout);
@@ -469,6 +445,7 @@ public class myListActivity extends Activity
             tempItem.setLocationName(item.getLocationName());
             tempItem.setOnSale(item.isOnSale());
             tempItem.setItemName(item.getItemName());
+            tempItem.setCoordinates(item.getCoordinates());
 
             //tempItem.setJSONBitmapString(getStringFromBitmap(item.getPicture()));
 

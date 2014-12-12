@@ -35,7 +35,7 @@
         android:layout_height="80dp"
         android:text="myWish List"
         android:id="@+id/myWishListButton"
-        android:background="@color/background_light_blue"
+        android:background="@drawable/button_custom"
         android:textColor="#ffffff"
         android:layout_margin="3dp"
         />
@@ -45,7 +45,7 @@
         android:layout_height="80dp"
         android:text="mySecret \n Santa Group"
         android:id="@+id/mySecretSantaGroup"
-        android:background="@color/background_light_blue"
+        android:background="@drawable/button_custom"
         android:textColor="#ffffff"
         android:layout_margin="3dp"
         />
@@ -62,7 +62,7 @@
         android:text="mySecret \n Buddies"
         android:id="@+id/mySecretBuddiesButton"
         android:layout_gravity="center_horizontal"
-        android:background="@color/background_light_blue"
+        android:background="@drawable/button_custom"
         android:textColor="#ffffff"
         android:layout_margin="3dp"
         />

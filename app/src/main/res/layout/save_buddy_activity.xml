@@ -43,5 +43,9 @@
 
         android:text="Add Buddy"
         android:id="@+id/addBuddyButton"
-        android:layout_gravity="center_horizontal"/>
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/button_custom"
+        android:textColor="#ffffff"
+        android:padding="5dp"
+        />
     </LinearLayout>

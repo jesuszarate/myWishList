@@ -1,18 +1,24 @@
 package edu.utah.cs4962.mywishlist;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.Locale;
 
 /**
  * Created by Jesus Zarate on 11/26/14.
@@ -44,18 +50,37 @@ public class myWishItemActivity extends Activity
 
         // Set the color for the text.
         Resources res = getResources();
-        int background_blue = res.getColor(R.color.accent_green);
+        int background_blue = res.getColor(R.color.background_light_blue);
         int itemColor = res.getColor(R.color.primary_light_blue);
 
         Button getDirectionsButton = (Button) findViewById(R.id.directionsButton);
-        getDirectionsButton.setText(timeToDestination + ": Get Directions");
+        getDirectionsButton.setText(getString(R.string.GetDirections));
         getDirectionsButton.setBackgroundColor(Color.TRANSPARENT);
         getDirectionsButton.setTextColor(background_blue);
+
         getDirectionsButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
+                String location = wishItem.getLocationName();
+                double latitude = wishItem.getCoordinates().latidude;
+                double longitude = wishItem.getCoordinates().longitude;
+                getDirectionsToLocation(location, latitude, longitude);
+            }
+        });
+
+        ImageView mapImage = (ImageView) findViewById(R.id.mapImage);
+        mapImage.setImageResource(R.drawable.google_maps);
+        mapImage.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                String location = wishItem.getLocationName();
+                double latitude = wishItem.getCoordinates().latidude;
+                double longitude = wishItem.getCoordinates().longitude;
+                getDirectionsToLocation(location, latitude, longitude);
 
             }
         });
@@ -71,8 +96,6 @@ public class myWishItemActivity extends Activity
         onSale.setTextColor(itemColor);
         SeekBar wantLevel = (SeekBar) findViewById(R.id.wantLevelBar1);
         wantLevel.setEnabled(false);
-
-        ImageView mapImage = (ImageView) findViewById(R.id.mapImage);
 
         if (wishItem != null)
         {
@@ -93,5 +116,28 @@ public class myWishItemActivity extends Activity
             // Add the map image here.
         }
 
+    }
+
+    private void getDirectionsToLocation(String location, double latitude, double longitude)
+    {
+        String uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?&daddr=%f,%f (%s)", latitude, longitude, location);
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+        intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+        try
+        {
+            startActivity(intent);
+        }
+        catch(ActivityNotFoundException ex)
+        {
+            try
+            {
+                Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                startActivity(unrestrictedIntent);
+            }
+            catch(ActivityNotFoundException innerEx)
+            {
+                Toast.makeText(myWishItemActivity.this, "Please install a maps application", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }

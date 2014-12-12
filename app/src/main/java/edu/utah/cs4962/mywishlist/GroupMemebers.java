@@ -51,5 +51,6 @@ public class GroupMemebers
         return ssGroupList.size();
     }
 
+    public void clearList(){ ssGroupList.clear(); }
 
 }
