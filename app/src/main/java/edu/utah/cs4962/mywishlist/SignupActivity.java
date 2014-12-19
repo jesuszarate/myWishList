@@ -1,13 +1,12 @@
 package edu.utah.cs4962.mywishlist;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 /**
  * Created by Jesus Zarate on 11/27/14.
@@ -23,6 +22,10 @@ public class SignupActivity extends Activity
 
         final EditText userName = (EditText) findViewById(R.id.userNameInputText);
         final EditText emailAddress = (EditText) findViewById(R.id.emailAddress);
+
+	    // Make it so the keyboard treats it like an email
+	    emailAddress.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+
         Button addBuddyButton = (Button) findViewById(R.id.addBuddyButton);
         Button addBuddyFromListButton = (Button) findViewById(R.id.addBuddyFromListButton);
 
