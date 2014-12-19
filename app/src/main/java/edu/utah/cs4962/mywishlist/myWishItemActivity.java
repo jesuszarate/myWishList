@@ -63,10 +63,17 @@ public class myWishItemActivity extends Activity
             @Override
             public void onClick(View view)
             {
-                String location = wishItem.getLocationName();
-                double latitude = wishItem.getCoordinates().latidude;
-                double longitude = wishItem.getCoordinates().longitude;
-                getDirectionsToLocation(location, latitude, longitude);
+                if(wishItem != null)
+                {
+                    if(wishItem.getCoordinates() != null)
+                    {
+                        String location = wishItem.getLocationName();
+                        double latitude = wishItem.getCoordinates().latidude;
+                        double longitude = wishItem.getCoordinates().longitude;
+                        getDirectionsToLocation(location, latitude, longitude);
+                    }
+
+                }
             }
         });
 

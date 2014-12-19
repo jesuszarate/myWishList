@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.MediaScannerConnection;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Gravity;
@@ -90,7 +91,7 @@ public class myNewWishItemActivity extends Activity
             // Set the image taken to the item preview
             imagePath = getIntent().getStringExtra(myListActivity.IMAGE_PATH);
 
-            Bitmap bitmap = myListFragment.getPic(imagePath);
+            Bitmap bitmap = getPic(imagePath);
             imageView.setImageBitmap(bitmap);
         }
 
@@ -107,7 +108,6 @@ public class myNewWishItemActivity extends Activity
             @Override
             public void onClick(View view)
             {
-
                 if (checkCorrectInput())
                 {
                     newWishItem.setItemName(itemName.getText().toString());
@@ -121,8 +121,9 @@ public class myNewWishItemActivity extends Activity
                     coordinates.longitude = longitude;
                     newWishItem.setCoordinates(coordinates);
 
-
                     File dir = Environment.getExternalStorageDirectory();
+                    //File dir = getFilesDir();
+
                     if (dir.exists())
                     {
                         String regex = getString(R.string.image_regular_expression);
@@ -131,6 +132,7 @@ public class myNewWishItemActivity extends Activity
                         File to = new File(dir,
                                 myListActivity.MY_WISH_LIST_DIR + "/" + regex + itemName.getText() +
                                         "_" + itemLocation.getText() + regex + ".png");
+
 
                         if (from.exists())
                         {
@@ -143,16 +145,48 @@ public class myNewWishItemActivity extends Activity
                             addNewItemButton.setText(to.getName());
                         }
                     }
-                }
+
                 myWishList.getInstance().addWishtItem(newWishItem);
-
+                MainScreenActivity.saveMyWishList(getFilesDir());
+                    
                 closeActivity();
-
+            }
             }
         });
 
 
         //endregion <Add New Item Button>
+    }
+
+    public Bitmap getPic(String ImagePath)
+    {
+        if (ImagePath != null)
+        {
+            // Get the dimensions of the View
+            int targetW = 100;//mImageView.getWidth();
+            int targetH = 100;//mImageView.getHeight();
+
+            // Get the dimensions of the bitmap
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            bmOptions.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(ImagePath, bmOptions);
+            int photoW = bmOptions.outWidth;
+            int photoH = bmOptions.outHeight;
+
+            // Determine how much to scale down the image
+            int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+
+            // Decode the image file into a Bitmap sized to fill the View
+            bmOptions.inJustDecodeBounds = false;
+            bmOptions.inSampleSize = scaleFactor;
+            bmOptions.inPurgeable = true;
+
+            Bitmap bitmap = BitmapFactory.decodeFile(ImagePath, bmOptions);
+
+            return bitmap;
+            //mImageView.setImageBitmap(bitmap);
+        }
+        return null;
     }
 
     public void closeActivity()
@@ -182,5 +216,12 @@ public class myNewWishItemActivity extends Activity
             return false;
         }
         return false;
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        MainScreenActivity.saveMyWishList(getFilesDir());
     }
 }

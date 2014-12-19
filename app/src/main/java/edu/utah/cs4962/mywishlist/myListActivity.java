@@ -55,7 +55,7 @@ public class myListActivity extends Activity
 
     public static final String MY_WISH_LIST_DIR = "myWishListImages";
     public static final String SIGN_UP_RESULTS = "addnewmember";
-    public static final String EXTRA_SUBJECT = "MY WISHLIST - Assigned Buddy";
+    public static final String EXTRA_SUBJECT = "MY WISH LIST - Assigned Buddy";
 
     public HashMap<Buddy, Buddy> randomGeneratedBuddies;
 
@@ -119,23 +119,23 @@ public class myListActivity extends Activity
             }
         });
 
-        ImageView shareButton = new ImageView(this);
-        shareButton.setImageResource(R.drawable.share_button);
-        shareButton.setBackgroundColor(Color.TRANSPARENT);
-        shareButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                shareMyWishList("", myWishList.getInstance().toBuddy());
-            }
-        });
+//        ImageView shareButton = new ImageView(this);
+//        shareButton.setImageResource(R.drawable.share_button);
+//        shareButton.setBackgroundColor(Color.TRANSPARENT);
+//        shareButton.setOnClickListener(new View.OnClickListener()
+//        {
+//            @Override
+//            public void onClick(View view)
+//            {
+//                shareMyWishList("", myWishList.getInstance().toBuddy());
+//            }
+//        });
 
         setHeaderTitle(titleView);
 
         titleLayout.addView(_addItemButton, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 10));
         titleLayout.addView(titleView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 90));
-        titleLayout.addView(shareButton, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 10));
+        //titleLayout.addView(shareButton, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 10));
         //endregion <Title>
 
         LinearLayout listLayout = new LinearLayout(this);
@@ -144,6 +144,19 @@ public class myListActivity extends Activity
 
         if (getIntent().hasExtra(MainScreenActivity.MY_LIST_TYPE))
         {
+            ImageView shareButton = new ImageView(this);
+            shareButton.setImageResource(R.drawable.share_button);
+            shareButton.setBackgroundColor(Color.TRANSPARENT);
+            shareButton.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View view)
+                {
+                    shareMyWishList("", myWishList.getInstance().toBuddy());
+                }
+            });
+            titleLayout.addView(shareButton, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 10));
+
             listFragment = new myListFragment();
 
             boolean myList = getIntent().getBooleanExtra(MainScreenActivity.MY_LIST_TYPE, true);
@@ -392,6 +405,9 @@ public class myListActivity extends Activity
 
         if (takePictureIntent.resolveActivity(getPackageManager()) != null)
         {
+            // Change this external directory with
+            // String p = MediaStore.Images.Media.EXTERNAL_CONTENT_URI.getPath();
+
             File imagesFolder = new File(Environment.getExternalStorageDirectory(), MY_WISH_LIST_DIR);
             imagesFolder.mkdirs();
 
@@ -461,5 +477,13 @@ public class myListActivity extends Activity
         File imageFile = new File(dir, myListActivity.MY_WISH_LIST_DIR + "/" + imageName);
 
         return imageFile;
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+
+        MainScreenActivity.saveGroupMembers(getFilesDir());
     }
 }

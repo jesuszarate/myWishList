@@ -21,6 +21,11 @@ public class GroupMemebers
     }
     private GroupMemebers(){}
 
+    public void initGroupMembers(ArrayList<Buddy> ssGroupList)
+    {
+        this.ssGroupList = ssGroupList;
+    }
+
     public ArrayList<Buddy> getSsGroupList()
     {
         return ssGroupList;

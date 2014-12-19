@@ -20,7 +20,7 @@
             android:text="Add Buddy"
             android:textSize="35dp"
             android:layout_gravity="center"
-            android:textColor="@color/layoutbackground_ligth_blue"
+            android:textColor="@color/accent_green"
             />
     </LinearLayout>
 
@@ -99,6 +99,16 @@
             android:text="@string/AddFromBuddyList"
             android:layout_gravity="bottom|center_horizontal"
             android:id="@+id/addBuddyFromListButton"
+            android:background="@drawable/button_custom"
+            android:textColor="#ffffff"
+            android:padding="5dp"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/signUp"
+            android:layout_gravity="bottom|center_horizontal"
+            android:id="@+id/signUp"
             android:background="@drawable/button_custom"
             android:textColor="#ffffff"
             android:padding="5dp"

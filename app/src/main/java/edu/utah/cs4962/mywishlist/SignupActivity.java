@@ -26,8 +26,17 @@ public class SignupActivity extends Activity
         Button addBuddyButton = (Button) findViewById(R.id.addBuddyButton);
         Button addBuddyFromListButton = (Button) findViewById(R.id.addBuddyFromListButton);
 
+        Button signUpButton = (Button) findViewById(R.id.signUp);
+
         if (getIntent().hasExtra(MainScreenActivity.BUDDY_LIST_TYPE))
         {
+            addBuddyFromListButton.setVisibility(View.GONE);
+            signUpButton.setVisibility(View.GONE);
+
+        }
+        else if (getIntent().hasExtra(ImportBuddyListActivity.SIGN_UP_TYPE))
+        {
+            addBuddyButton.setVisibility(View.GONE);
             addBuddyFromListButton.setVisibility(View.GONE);
         }
 
@@ -66,6 +75,20 @@ public class SignupActivity extends Activity
             public void onClick(View view)
             {
                 openBuddySelectorActivity();
+            }
+        });
+
+        signUpButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                myWishList.getInstance().setUserName(userName.getText().toString());
+                myWishList.getInstance().setEmailAddress(emailAddress.getText().toString());
+
+                ImportBuddyListActivity.saveUser(getFilesDir());
+
+                ImportBuddyListActivity.openMainScreenActivity(SignupActivity.this);
             }
         });
     }

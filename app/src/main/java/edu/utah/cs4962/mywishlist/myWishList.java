@@ -10,8 +10,7 @@ public class myWishList
 
     private ArrayList<myWishItem> wishList = new ArrayList<myWishItem>();
 
-    private String userName = "JayJay";
-    private String emailAddress = "jay8chuy@gmail.com";
+    private User user = new User();
 
     private static myWishList _instance = null;
 
@@ -25,6 +24,10 @@ public class myWishList
     }
     private myWishList(){}
 
+    public void initMyWishList(ArrayList<myWishItem> wishList)
+    {
+        this.wishList = wishList;
+    }
     public ArrayList<myWishItem> getWishList()
     {
         return wishList;
@@ -52,30 +55,35 @@ public class myWishList
 
     public String getEmailAddress()
     {
-        return emailAddress;
+        return user.emailAddress;
     }
 
     public void setEmailAddress(String emailAddress)
     {
-        this.emailAddress = emailAddress;
+        this.user.emailAddress = emailAddress;
+    }
+
+    public User getUser()
+    {
+        return this.user;
     }
 
     public String getUserName()
     {
 
-        return userName;
+        return user.userName;
     }
 
     public void setUserName(String userName)
     {
-        this.userName = userName;
+        this.user.userName = userName;
     }
 
     public Buddy toBuddy()
     {
         Buddy buddy = new Buddy();
-        buddy.MemberName = userName;
-        buddy.EmailAddress = emailAddress;
+        buddy.MemberName = user.userName;
+        buddy.EmailAddress = user.emailAddress;
         buddy.wishList = wishList;
 
         return buddy;

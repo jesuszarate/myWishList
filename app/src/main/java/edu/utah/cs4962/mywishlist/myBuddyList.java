@@ -22,6 +22,11 @@ public class myBuddyList
 
     private myBuddyList(){}
 
+    public void initBuddyList(ArrayList<Buddy> buddyList)
+    {
+        this.buddyList = buddyList;
+    }
+
     public ArrayList<Buddy> getBuddyList()
     {
         return buddyList;

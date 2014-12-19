@@ -19,5 +19,8 @@
     <string name="assignSecretBuddies">Assign Secret Buddies</string>
     <string name="GetDirections">Get Directions</string>
     <string name="AddNewItem">Add New Item</string>
+    <string name="wishListCouldNotBeAdded">Sorry, wish List could not be added. Try using another
+    email application.</string>
+    <string name="signUp">Sign Up</string>
 
 </resources>

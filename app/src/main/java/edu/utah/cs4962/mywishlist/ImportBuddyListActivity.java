@@ -2,6 +2,7 @@ package edu.utah.cs4962.mywishlist;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DataSetObserver;
@@ -24,7 +25,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -41,8 +46,12 @@ import java.util.zip.ZipFile;
  */
 public class ImportBuddyListActivity extends Activity
 {
+    public static final String SIGN_UP_TYPE = "signUpType";
+    public static final String USER_FILE = "signUpType";
     Buddy buddyWishList;
     Uri data;
+
+    Gson _gson = new Gson();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -62,7 +71,8 @@ public class ImportBuddyListActivity extends Activity
                 // Open the buddy list activity
                 saveBuddy();
 
-                openMyBuddyList();
+                //openMyBuddyList();
+                openMainScreenActivity(ImportBuddyListActivity.this);
             }
         });
 
@@ -73,33 +83,55 @@ public class ImportBuddyListActivity extends Activity
             {
                 String dataType = importData(data);
 
-                if(dataType.equals(getString(R.string.WPM_DATA_TYPE)))
-                    Toast.makeText(this, getString(R.string.buddyAddedMessage) ,Toast.LENGTH_SHORT).show();
-                else if(dataType.equals(getString(R.string.WPM_DATA_TYPE)))
-                    Toast.makeText(this, getString(R.string.imageAddedMessage) ,Toast.LENGTH_SHORT).show();
+                if (dataType.equals(getString(R.string.WPM_DATA_TYPE)))
+                {
+                    MainScreenActivity.saveBuddyList(getFilesDir());
+                    Toast.makeText(this, getString(R.string.buddyAddedMessage), Toast.LENGTH_SHORT).show();
+                } else if (dataType.equals(getString(R.string.WPM_DATA_TYPE)))
+                    Toast.makeText(this, getString(R.string.imageAddedMessage), Toast.LENGTH_SHORT).show();
 
                 finish();
 
             } catch (Exception e)
             {
+                Toast.makeText(this, getString(R.string.wishListCouldNotBeAdded), Toast.LENGTH_SHORT).show();
                 // warn user about bad data here
                 finish();
                 return;
             }
-        }
-        else {
-            // Start Main Screen Activity
-            openMainScreenActivity();
+        } else
+        {
+
+            // If there's a user then load its information.
+            loadUser(getFilesDir());
+
+            if (myWishList.getInstance().getUserName() == null)
+            {
+                openSignUpActivity();
+            } else
+            {
+                // Start Main Screen Activity
+                openMainScreenActivity(this);
+            }
         }
     }
-    private void openMainScreenActivity()
+
+    private void openSignUpActivity()
     {
-        Intent intent = new Intent(this, MainScreenActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Intent intent = new Intent(this, SignupActivity.class);
+        intent.putExtra(SIGN_UP_TYPE, true);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
 
-    private void saveBuddy( )
+    public static void openMainScreenActivity(Context context)
+    {
+        Intent intent = new Intent(context, MainScreenActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        context.startActivity(intent);
+    }
+
+    private void saveBuddy()
     {
         myBuddyList.getInstance().setBuddy(buddyWishList);
     }
@@ -120,19 +152,16 @@ public class ImportBuddyListActivity extends Activity
 
         String extension = getString(R.string.extension);
 
-       //String p = data.getPath();
 
-        if(data.getPath().endsWith(extension))
+        if (data.getPath().endsWith(extension))
         {
             renameImage(path);
             return getString(R.string.PNG_DATA_TYPE);
-        }
-        else if(path.endsWith(extension))
+        } else if (path.endsWith(extension))
         {
             renameImage(path);
             return getString(R.string.PNG_DATA_TYPE);
-        }
-        else if (ContentResolver.SCHEME_CONTENT.equals(scheme))
+        } else if (ContentResolver.SCHEME_CONTENT.equals(scheme))
         {
             try
             {
@@ -154,7 +183,8 @@ public class ImportBuddyListActivity extends Activity
                 is.close();
 
 
-                Type myWishListType = new TypeToken<Buddy>() {
+                Type myWishListType = new TypeToken<Buddy>()
+                {
                 }.getType();
                 Gson gson = new Gson();
 
@@ -165,7 +195,7 @@ public class ImportBuddyListActivity extends Activity
 
                 return getString(R.string.WPM_DATA_TYPE);
 
-            }catch (Exception e)
+            } catch (Exception e)
             {
                 Log.e("Loading .mwl file", e.toString());
             }
@@ -194,17 +224,19 @@ public class ImportBuddyListActivity extends Activity
         return null;
     }
 
-    public String getPath(Uri uri) {
+    public String getPath(Uri uri)
+    {
         // just some safety built in
-        if( uri == null ) {
-            // TODO perform some logging or show user feedback
+        if (uri == null)
+        {
             return null;
         }
         // try to retrieve the image from the media store first
         // this will only work for images selected from gallery
-        String[] projection = { MediaStore.Images.Media.DATA };
+        String[] projection = {MediaStore.Images.Media.DATA};
         Cursor cursor = managedQuery(uri, projection, null, null, null);
-        if( cursor != null ){
+        if (cursor != null)
+        {
             int column_index = cursor
                     .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             cursor.moveToFirst();
@@ -214,48 +246,68 @@ public class ImportBuddyListActivity extends Activity
         return uri.getPath();
     }
 
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+    }
 
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
 
-    public void unzipFile(String filePath)
+        //loadUser(getFilesDir());
+    }
+
+    private void loadUser(File filesDir)
     {
         try
         {
-            ZipFile zf = new ZipFile(filePath);
-            Enumeration entries = zf.entries();
+            File file = new File(filesDir, USER_FILE);
+            FileReader textReader = new FileReader(file);
+            BufferedReader bufferedTextReader = new BufferedReader(textReader);
 
-            BufferedReader input = new BufferedReader(new InputStreamReader(
-                    System.in));
+            String jsonBuddyList = bufferedTextReader.readLine();
 
-            while (entries.hasMoreElements())
+            Type lineListType = new TypeToken<User>()
             {
-                ZipEntry ze = (ZipEntry) entries.nextElement();
+            }.getType();
 
-                //System.out.println("Read " + ze.getName() + "?");
+            User user = _gson.fromJson(jsonBuddyList, lineListType);
 
-                String inputLine = input.readLine();
-                if (inputLine.equalsIgnoreCase("yes"))
-                {
-                    long size = ze.getSize();
-                    if (size > 0)
-                    {
-                        //System.out.println("Length is " + size);
+            bufferedTextReader.close();
 
-                        BufferedReader br = new BufferedReader(
-                                new InputStreamReader(zf.getInputStream(ze)));
-                        String line;
-                        while ((line = br.readLine()) != null)
-                        {
-                            System.out.println(line);
-                            // Gson should be able to read this string.
-                        }
-                        br.close();
-                    }
-                }
-            }
+            myWishList.getInstance().setUserName(user.userName);
+            myWishList.getInstance().setEmailAddress(user.emailAddress);
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
         } catch (IOException e)
         {
             e.printStackTrace();
         }
     }
 
+    public static void saveUser(File filesDir)
+    {
+        Gson _gson = new Gson();
+        String jsonUser = _gson.toJson(myWishList.getInstance().getUser());
+
+        try
+        {
+            File file = new File(filesDir, USER_FILE);
+            FileWriter textWriter;
+            textWriter = new FileWriter(file);
+            BufferedWriter bufferedWriter = new BufferedWriter(textWriter);
+
+            // Write the paint points in json format.
+            bufferedWriter.write(jsonUser);
+            bufferedWriter.close();
+
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
 }

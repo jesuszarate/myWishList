@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Would you like to save this list?"
+        android:text="Take me back to main screen."
         android:id="@+id/saveWarningLabel"
         android:layout_gravity="center_horizontal"/>
 
@@ -29,7 +29,7 @@
         android:layout_height="0dp"
         android:layout_weight="5"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Name"
+        android:text=""
         android:id="@+id/nameLabel"
         android:layout_gravity="center_horizontal"/>
     <Space
@@ -41,7 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:text="Add Buddy"
+        android:text="Ok"
         android:id="@+id/addBuddyButton"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/button_custom"
