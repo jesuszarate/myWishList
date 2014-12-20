@@ -48,6 +48,7 @@ public class myListActivity extends Activity
     static final int MEMBER_ADDED = 17;
     static final int BUDDY_SELECTED = 19;
     private static final int REQUEST_SHARE_DATA = 18;
+    public static final int EMAIL_SENT = 107;
 
     myListFragment listFragment;
     SecretSantaGroupFragment secretSantaGroupFragment;
@@ -271,6 +272,8 @@ public class myListActivity extends Activity
         }
     }
 
+
+    ArrayList<String> filesToGarbageCollect = new ArrayList<String>();
     /**
      * Given the email address whom the user wants to share the
      * wish list with. It will email the list to that email address.
@@ -285,7 +288,10 @@ public class myListActivity extends Activity
         String b = gson.toJson(buddy);
 
         // create attachment
-        String filename = "MyWishList.mwl";
+        //String filename = "MyWishList.mwl";
+        String wml = getString(R.string.WMLExtension);
+        String filename = buddy.MemberName + wml;
+        filesToGarbageCollect.add(filename);
 
         // Create the correct file name.
         File file = new File(getExternalCacheDir(), filename);
@@ -348,7 +354,8 @@ public class myListActivity extends Activity
         }
 
         emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-        startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+        //startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+        startActivityForResult(Intent.createChooser(emailIntent, "Send mail..."), EMAIL_SENT);
     }
 
     private String createMessageBody(Buddy buddy)
@@ -461,7 +468,25 @@ public class myListActivity extends Activity
             {
                 secretSantaGroupFragment.refreshList();
             }
+            else if(requestCode == EMAIL_SENT)
+            {
+                garbageCollect();
+            }
         }
+        if(requestCode == EMAIL_SENT)
+        {
+            garbageCollect();
+        }
+    }
+
+    private void garbageCollect()
+    {
+        for(String filename : filesToGarbageCollect)
+        {
+            File file = new File(getExternalCacheDir(), filename);
+            file.delete();
+        }
+        filesToGarbageCollect.clear();
     }
 
     public void openNewWishItemActivity(Context context)

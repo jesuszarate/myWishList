@@ -23,5 +23,6 @@
     email application.</string>
     <string name="signUp">Sign Up</string>
     <string name="moreThanTwoBuddiesWarning">You must have more than two buddies.</string>
+    <string name="WMLExtension">.wml</string>
 
 </resources>
