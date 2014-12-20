@@ -53,7 +53,6 @@ public class BuddySelectorActivity extends Activity
         titleLayout.addView(titleView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 90));
         //titleLayout.addView(shareButton, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 10));
 
-        // TODO: CREATE A BUDDY PICKING FRAGMENT
         BuddySelectorFragment listFragment = new BuddySelectorFragment();
         listFragment.init();
 
@@ -62,20 +61,24 @@ public class BuddySelectorActivity extends Activity
         transaction.add(13, listFragment);
         transaction.commit();
 
-        Button addButton = new Button(this);
-        addButton.setText(getString(R.string.add));
-        addButton.setBackgroundResource(R.drawable.button_custom);
-        addButton.setTextColor(Color.WHITE);
-        addButton.setPadding(5,5,5,5);
-        addButton.setOnClickListener(new View.OnClickListener()
+        Button addButton = null;
+        if(myBuddyList.getInstance().getBuddyListCount() > 0)
         {
-            @Override
-            public void onClick(View view)
+            addButton = new Button(this);
+            addButton.setText(getString(R.string.add));
+            addButton.setBackgroundResource(R.drawable.button_custom);
+            addButton.setTextColor(Color.WHITE);
+            addButton.setPadding(5, 5, 5, 5);
+            addButton.setOnClickListener(new View.OnClickListener()
             {
-                GroupMemebers.getInstance().addAllBuddies(BuddySelectorFragment.selectedBuddies);
-                closeActivity();
-            }
-        });
+                @Override
+                public void onClick(View view)
+                {
+                    GroupMemebers.getInstance().addAllBuddies(BuddySelectorFragment.selectedBuddies);
+                    closeActivity();
+                }
+            });
+        }
 
         rootLayout.addView(titleLayout);
 
@@ -83,7 +86,9 @@ public class BuddySelectorActivity extends Activity
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         buttonParams.setMargins(5,5,5,5);
 
-        rootLayout.addView(addButton, buttonParams);
+        if(addButton != null)
+            rootLayout.addView(addButton, buttonParams);
+
         rootLayout.addView(listLayout);
 
         setContentView(rootLayout);

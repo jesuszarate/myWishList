@@ -11,6 +11,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -28,6 +30,28 @@ public class myWishItemActivity extends Activity
 
     String timeToDestination;
     myWishItem wishItem = null;
+
+    private static final int MENU_ITEM_ITEM1 = 1;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(Menu.NONE, MENU_ITEM_ITEM1, Menu.NONE, "Remove Item");
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case MENU_ITEM_ITEM1:
+                //clearArray();
+                Toast.makeText(myWishItemActivity.this, "Item virtually removed.", Toast.LENGTH_SHORT).show();
+                finish();
+                return true;
+
+            default:
+                return false;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)

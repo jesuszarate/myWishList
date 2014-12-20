@@ -8,7 +8,11 @@ import android.graphics.Color;
 import android.media.MediaScannerConnection;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -60,6 +64,7 @@ public class myNewWishItemActivity extends Activity
     }
     //endregion Listeners
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -96,6 +101,28 @@ public class myNewWishItemActivity extends Activity
         }
 
         itemPrice = (EditText) findViewById(R.id.itemPriceInput);
+        itemPrice.setHint("0.00");
+        itemPrice.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3)
+            {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3)
+            {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable)
+            {
+
+            }
+        });
+
         itemOnSale = (CheckBox) findViewById(R.id.onSaleCheckBox);
         itemWantLevel = (SeekBar) findViewById(R.id.wantLevelBar);
 
@@ -142,13 +169,13 @@ public class myNewWishItemActivity extends Activity
                         if (to.exists())
                         {
                             newWishItem.setImageName(to.getName());
-                            addNewItemButton.setText(to.getName());
+                            //addNewItemButton.setText(to.getName());
                         }
                     }
 
                 myWishList.getInstance().addWishtItem(newWishItem);
                 MainScreenActivity.saveMyWishList(getFilesDir());
-                    
+
                 closeActivity();
             }
             }

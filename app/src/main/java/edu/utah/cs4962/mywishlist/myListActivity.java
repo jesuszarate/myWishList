@@ -62,7 +62,6 @@ public class myListActivity extends Activity
     public SendEmailsClass sendEmailsClass;
 
     Gson gson = new Gson();
-    private ShareActionProvider mShareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -111,6 +110,8 @@ public class myListActivity extends Activity
                 {
                     openAddMemberActivity(myListActivity.this, MainScreenActivity.SS_GROUP_TYPE);
                 }
+
+                // BUDDY LIST
                 else if (getIntent().hasExtra(MainScreenActivity.BUDDY_LIST_TYPE))
                 {
                     openAddMemberActivity(myListActivity.this, MainScreenActivity.BUDDY_LIST_TYPE);
@@ -130,18 +131,17 @@ public class myListActivity extends Activity
 //                shareMyWishList("", myWishList.getInstance().toBuddy());
 //            }
 //        });
-
         setHeaderTitle(titleView);
 
         titleLayout.addView(_addItemButton, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 10));
         titleLayout.addView(titleView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 90));
-        //titleLayout.addView(shareButton, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 10));
         //endregion <Title>
 
         LinearLayout listLayout = new LinearLayout(this);
         listLayout.setOrientation(LinearLayout.VERTICAL);
         listLayout.setId(11);
 
+        //region WishList
         if (getIntent().hasExtra(MainScreenActivity.MY_LIST_TYPE))
         {
             ImageView shareButton = new ImageView(this);
@@ -163,16 +163,27 @@ public class myListActivity extends Activity
             if (myList)
             {
                 listFragment.init(myListFragment.MY_LIST, 0);
-            } else
+            }
+            // If the list is coming from a selected buddy
+            else
             {
+                _addItemButton.setVisibility(View.INVISIBLE);
+                shareButton.setVisibility(View.INVISIBLE);
+
                 int selectedItem = getIntent().getIntExtra(SecretSantaGroupFragment.SELECTED_BUDDY, 0);
+
+                titleView.setText(myBuddyList.getInstance().getBuddy(selectedItem).MemberName);
                 listFragment.init(myListFragment.BUDDY_LIST, selectedItem);
             }
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.add(11, listFragment);
             transaction.commit();
-        } else if (getIntent().hasExtra(MainScreenActivity.SS_GROUP_TYPE))
+        }
+        //endregion WishList
+
+        //region Secret Santa
+        else if (getIntent().hasExtra(MainScreenActivity.SS_GROUP_TYPE))
         {
             secretSantaGroupFragment = new SecretSantaGroupFragment();
             secretSantaGroupFragment.init(SecretSantaGroupFragment.SECRET_SANTA_LIST);
@@ -181,7 +192,11 @@ public class myListActivity extends Activity
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.add(11, secretSantaGroupFragment);
             transaction.commit();
-        } else if (getIntent().hasExtra(MainScreenActivity.BUDDY_LIST_TYPE))
+        }
+        //endregion Secret Santa
+
+        //region mySecret Buddies
+        else if (getIntent().hasExtra(MainScreenActivity.BUDDY_LIST_TYPE))
         {
             secretSantaGroupFragment = new SecretSantaGroupFragment();
             secretSantaGroupFragment.init(SecretSantaGroupFragment.BUDDY_LIST);
@@ -191,13 +206,13 @@ public class myListActivity extends Activity
             transaction.add(11, secretSantaGroupFragment);
             transaction.commit();
         }
+        //endregion mySecret Buddies
 
         rootLayout.addView(titleLayout);
 
-
         sendEmailsClass = new SendEmailsClass(this);
 
-        // Button to assign secret buddies
+        //region Button to assign secret buddies
         if (getIntent().hasExtra(MainScreenActivity.SS_GROUP_TYPE))
         {
             Button assignBuddiesButton = new Button(this);
@@ -205,7 +220,7 @@ public class myListActivity extends Activity
             //assignBuddiesButton.setBackgroundColor(getResources().getColor(R.color.background_light_blue));
             assignBuddiesButton.setBackgroundResource(R.drawable.button_custom);
             assignBuddiesButton.setTextColor(Color.WHITE);
-            assignBuddiesButton.setPadding(5,5,5,5);
+            assignBuddiesButton.setPadding(5, 5, 5, 5);
 
             assignBuddiesButton.setOnClickListener(new View.OnClickListener()
             {
@@ -225,18 +240,24 @@ public class myListActivity extends Activity
                         GroupMemebers.getInstance().clearList();
                         //emailWithMultipleAttachments();
                     }
+                    else
+                    {
+                        Toast.makeText(myListActivity.this, getString(R.string.moreThanTwoBuddiesWarning),
+                                Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
 
             LinearLayout.LayoutParams bparams = new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            bparams.setMargins(10,10,10,10);
+            bparams.setMargins(10, 10, 10, 10);
             rootLayout.addView(assignBuddiesButton, bparams);
         }
+        //endregion Button to assign secret buddies
+
         rootLayout.addView(listLayout);
         setContentView(rootLayout);
     }
-
 
     private void setHeaderTitle(TextView titleView)
     {
@@ -317,6 +338,7 @@ public class myListActivity extends Activity
         emailIntent.putExtra(Intent.EXTRA_TEXT, createMessageBody(buddy));
         //has to be an ArrayList
         ArrayList<Uri> uris = new ArrayList<Uri>();
+
         //convert from paths to Android friendly Parcelable Uri's
         for (String file : filePaths)
         {
@@ -324,6 +346,7 @@ public class myListActivity extends Activity
             Uri u = Uri.fromFile(fileIn);
             uris.add(u);
         }
+
         emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
         startActivity(Intent.createChooser(emailIntent, "Send mail..."));
     }
@@ -332,7 +355,7 @@ public class myListActivity extends Activity
     {
         String message = "";
         //for (myWishItem item : myWishList.getInstance().getWishList())
-        for(myWishItem item : buddy.wishList)
+        for (myWishItem item : buddy.wishList)
         {
             message += item.getItemName() + "\n";
             message += "- Location: " + item.getLocationName() + "\n";
@@ -346,16 +369,19 @@ public class myListActivity extends Activity
 
     public void sendEmails(HashMap<Buddy, Buddy> buddyHashMap)
     {
-        Iterator iterator = buddyHashMap.entrySet().iterator();
-
-        while (iterator.hasNext())
+        if (buddyHashMap != null)
         {
-            Map.Entry<Buddy, Buddy> pair = (Map.Entry) iterator.next();
-            Buddy santa = pair.getKey();
-            Buddy buddy = pair.getValue();
+            Iterator iterator = buddyHashMap.entrySet().iterator();
 
-            shareMyWishList(santa.EmailAddress, buddy);
-            //emailWithMultipleAttachments(new String[]{santa.EmailAddress}, gatherFiles(buddy));
+            while (iterator.hasNext())
+            {
+                Map.Entry<Buddy, Buddy> pair = (Map.Entry) iterator.next();
+                Buddy santa = pair.getKey();
+                Buddy buddy = pair.getValue();
+
+                shareMyWishList(santa.EmailAddress, buddy);
+                //emailWithMultipleAttachments(new String[]{santa.EmailAddress}, gatherFiles(buddy));
+            }
         }
     }
 
@@ -385,9 +411,7 @@ public class myListActivity extends Activity
         if (ListType.equals(MainScreenActivity.SS_GROUP_TYPE))
         {
             addMemberIntent.putExtra(MainScreenActivity.SS_GROUP_TYPE, true);
-        }
-
-        else if (ListType.equals(MainScreenActivity.BUDDY_LIST_TYPE))
+        } else if (ListType.equals(MainScreenActivity.BUDDY_LIST_TYPE))
         {
             addMemberIntent.putExtra(MainScreenActivity.BUDDY_LIST_TYPE, true);
         }

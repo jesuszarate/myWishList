@@ -39,6 +39,9 @@ public class SignupActivity extends Activity
             addBuddyButton.setVisibility(View.GONE);
             addBuddyFromListButton.setVisibility(View.GONE);
         }
+        else {
+            signUpButton.setVisibility(View.GONE);
+        }
 
         addBuddyButton.setOnClickListener(new View.OnClickListener()
         {
@@ -56,12 +59,14 @@ public class SignupActivity extends Activity
                     {
                         // Add item to the GroupMembers list
                         GroupMemebers.getInstance().addBuddy(newBuddy);
+                        MainScreenActivity.saveGroupMembers(getFilesDir());
                     }
 
                     // else if the activity was opened from the buddy activity
                     else if (getIntent().hasExtra(MainScreenActivity.BUDDY_LIST_TYPE))
                     {
                         myBuddyList.getInstance().setBuddy(newBuddy);
+                        MainScreenActivity.saveBuddyList(getFilesDir());
                     }
 
                     closeActivity();
