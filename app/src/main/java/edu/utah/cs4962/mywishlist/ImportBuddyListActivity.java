@@ -161,7 +161,7 @@ public class ImportBuddyListActivity extends Activity
         {
             renameImage(path);
             return getString(R.string.PNG_DATA_TYPE);
-        } else if (ContentResolver.SCHEME_CONTENT.equals(scheme))
+        } else //if (ContentResolver.SCHEME_CONTENT.equals(scheme))
         {
             try
             {

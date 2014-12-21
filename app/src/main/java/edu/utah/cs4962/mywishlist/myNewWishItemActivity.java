@@ -89,8 +89,8 @@ public class myNewWishItemActivity extends Activity
                 latitude = gpsTracker.getLatitude();
                 longitude = gpsTracker.getLongitude();
 
-                Toast.makeText(getApplicationContext(), "Latitude: " + latitude +
-                        "\nLongitude: " + longitude, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), "Latitude: " + latitude +
+//                        "\nLongitude: " + longitude, Toast.LENGTH_SHORT).show();
             }
 
             // Set the image taken to the item preview
@@ -149,7 +149,6 @@ public class myNewWishItemActivity extends Activity
                     newWishItem.setCoordinates(coordinates);
 
                     File dir = Environment.getExternalStorageDirectory();
-                    //File dir = getFilesDir();
 
                     if (dir.exists())
                     {
@@ -159,7 +158,6 @@ public class myNewWishItemActivity extends Activity
                         File to = new File(dir,
                                 myListActivity.MY_WISH_LIST_DIR + "/" + regex + itemName.getText() +
                                         "_" + itemLocation.getText() + regex + ".png");
-
 
                         if (from.exists())
                         {
@@ -173,14 +171,18 @@ public class myNewWishItemActivity extends Activity
                         }
                     }
 
-                myWishList.getInstance().addWishtItem(newWishItem);
-                MainScreenActivity.saveMyWishList(getFilesDir());
+                    myWishList.getInstance().addWishtItem(newWishItem);
+                    MainScreenActivity.saveMyWishList(getFilesDir());
 
-                closeActivity();
-            }
+                    closeActivity();
+                } else
+                {
+                    Toast.makeText(myNewWishItemActivity.this, getString(R.string.incorrectInputFormat),
+                            Toast.LENGTH_LONG).show();
+                }
+
             }
         });
-
 
         //endregion <Add New Item Button>
     }

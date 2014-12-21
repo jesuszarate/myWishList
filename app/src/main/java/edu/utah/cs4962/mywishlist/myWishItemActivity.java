@@ -34,7 +34,8 @@ public class myWishItemActivity extends Activity
     private static final int MENU_ITEM_ITEM1 = 1;
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         menu.add(Menu.NONE, MENU_ITEM_ITEM1, Menu.NONE, "Remove Item");
         return true;
     }
@@ -43,9 +44,21 @@ public class myWishItemActivity extends Activity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case MENU_ITEM_ITEM1:
-                //clearArray();
-                Toast.makeText(myWishItemActivity.this, "Item virtually removed.", Toast.LENGTH_SHORT).show();
-                finish();
+
+                if (getIntent().hasExtra(myListFragment.ITEM_ID))
+                {
+                    int id = getIntent().getExtras().getInt(myListFragment.ITEM_ID);
+
+                    wishItem = myWishList.getInstance().getWishItem(id);
+                    String itemName = wishItem.getItemName();
+
+                    myWishList.getInstance().removeWishItem(wishItem);
+                    MainScreenActivity.saveMyWishList(getFilesDir());
+
+                    Toast.makeText(myWishItemActivity.this, itemName + ", has been removed",
+                            Toast.LENGTH_SHORT).show();
+                    closeActivity();
+                }
                 return true;
 
             default:
@@ -60,13 +73,17 @@ public class myWishItemActivity extends Activity
 
         setContentView(R.layout.my_wish_item);
 
+        // Item accessed through my buddy List
         if (getIntent().hasExtra(myListFragment.BUDDY_ID) && getIntent().hasExtra(myListFragment.ITEM_ID))
         {
             int itemId = getIntent().getExtras().getInt(myListFragment.ITEM_ID);
             int buddyId = getIntent().getExtras().getInt(myListFragment.BUDDY_ID);
 
             wishItem = myBuddyList.getInstance().getBuddy(buddyId).wishList.get(itemId);
-        } else if (getIntent().hasExtra(myListFragment.ITEM_ID))
+        }
+
+        // Item accessed from myWishList
+        else if (getIntent().hasExtra(myListFragment.ITEM_ID))
         {
             int id = getIntent().getExtras().getInt(myListFragment.ITEM_ID);
             wishItem = myWishList.getInstance().getWishItem(id);
@@ -170,5 +187,21 @@ public class myWishItemActivity extends Activity
                 Toast.makeText(myWishItemActivity.this, "Please install a maps application", Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+//    private void closeActivity()
+//    {
+//        Intent resultIntent = new Intent();
+//        setResult(Activity.RESULT_OK, resultIntent);
+//
+//        finish();
+//    }
+
+    public void closeActivity()
+    {
+        Intent resultIntent = new Intent();
+        setResult(Activity.RESULT_OK, resultIntent);
+        //finishActivity(myListFragment.OPENED_ITEM);
+        finish();
     }
 }

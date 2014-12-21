@@ -1,10 +1,13 @@
 package edu.utah.cs4962.mywishlist;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
@@ -16,6 +19,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -43,6 +48,8 @@ import java.util.Map;
  */
 public class myListActivity extends Activity
 {
+    private ProgressDialog progressBar;
+
     static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 15;
     static final int NEW_ITEM_ADDED = 16;
     static final int MEMBER_ADDED = 17;
@@ -61,8 +68,46 @@ public class myListActivity extends Activity
     public HashMap<Buddy, Buddy> randomGeneratedBuddies;
 
     public SendEmailsClass sendEmailsClass;
+    ArrayList<String> filesToGarbageCollect = new ArrayList<String>();
 
     Gson gson = new Gson();
+
+    private static final int MENU_ITEM_ITEM1 = 1;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+
+        if (getIntent().hasExtra(MainScreenActivity.BUDDY_LIST_TYPE)
+                || getIntent().hasExtra(MainScreenActivity.MY_LIST_TYPE))
+        {
+            menu.add(Menu.NONE, MENU_ITEM_ITEM1, Menu.NONE, "Refresh");
+            return true;
+        } else return false;
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case MENU_ITEM_ITEM1:
+
+                if (getIntent().hasExtra(MainScreenActivity.MY_LIST_TYPE))
+                {
+                    listFragment.refreshList();
+                } else if (getIntent().hasExtra(MainScreenActivity.BUDDY_LIST_TYPE))
+                {
+                    secretSantaGroupFragment.refreshList();
+                }
+
+                return true;
+
+            default:
+                return false;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -81,7 +126,7 @@ public class myListActivity extends Activity
         titleLayout.setBackgroundColor(indigo);
 
         TextView titleView = new TextView(this);
-        titleView.setText("myList");
+        titleView.setText(getString(R.string.myList));
         titleView.setTextSize(40);
         titleView.setTypeface(null, Typeface.BOLD_ITALIC);
         titleView.setGravity(Gravity.CENTER);
@@ -121,17 +166,6 @@ public class myListActivity extends Activity
             }
         });
 
-//        ImageView shareButton = new ImageView(this);
-//        shareButton.setImageResource(R.drawable.share_button);
-//        shareButton.setBackgroundColor(Color.TRANSPARENT);
-//        shareButton.setOnClickListener(new View.OnClickListener()
-//        {
-//            @Override
-//            public void onClick(View view)
-//            {
-//                shareMyWishList("", myWishList.getInstance().toBuddy());
-//            }
-//        });
         setHeaderTitle(titleView);
 
         titleLayout.addView(_addItemButton, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 10));
@@ -145,6 +179,13 @@ public class myListActivity extends Activity
         //region WishList
         if (getIntent().hasExtra(MainScreenActivity.MY_LIST_TYPE))
         {
+            // If the user clicks on the add new item open the camera immediately
+            // as if the user had pressed the add new button in this list page.
+            if (getIntent().hasExtra(MainScreenActivity.ADD_NEW_ITEM))
+            {
+                openCamera();
+            }
+
             ImageView shareButton = new ImageView(this);
             shareButton.setImageResource(R.drawable.share_button);
             shareButton.setBackgroundColor(Color.TRANSPARENT);
@@ -230,18 +271,21 @@ public class myListActivity extends Activity
                 {
                     if (GroupMemebers.getInstance().getGroupCount() > 2)
                     {
-                        RandomizeBuddies randomizeBuddies = new RandomizeBuddies();
-                        randomGeneratedBuddies = randomizeBuddies.randomizer(GroupMemebers.getInstance().getSsGroupList());
+                        // Warn the user about actually sending their secret buddies
+                        messageBox(myListActivity.this, "Send Lists?", getString(R.string.sendingListsWarning));
 
-                        // Send the emails at this point to the group with their buddy.(Also clear the list)
-                        //sendEmailsClass.sendEmails(randomGeneratedBuddies);
-
-                        sendEmails(randomGeneratedBuddies);
-
-                        GroupMemebers.getInstance().clearList();
+//                        // Randomize and send the lists
+//                        RandomizeBuddies randomizeBuddies = new RandomizeBuddies();
+//                        randomGeneratedBuddies = randomizeBuddies.randomizer(GroupMemebers.getInstance().getSsGroupList());
+//
+//                        // Send the emails at this point to the group with their buddy.(Also clear the list)
+//                        //sendEmailsClass.sendEmails(randomGeneratedBuddies);
+//
+//                        sendEmails(randomGeneratedBuddies);
+//
+//                        GroupMemebers.getInstance().clearList();
                         //emailWithMultipleAttachments();
-                    }
-                    else
+                    } else
                     {
                         Toast.makeText(myListActivity.this, getString(R.string.moreThanTwoBuddiesWarning),
                                 Toast.LENGTH_SHORT).show();
@@ -260,20 +304,71 @@ public class myListActivity extends Activity
         setContentView(rootLayout);
     }
 
+
+    public void finalizeSecretBuddies()
+    {
+        // Randomize and send the lists
+        RandomizeBuddies randomizeBuddies = new RandomizeBuddies();
+        randomGeneratedBuddies = randomizeBuddies.randomizer(GroupMemebers.getInstance().getSsGroupList());
+
+        // Send the emails at this point to the group with their buddy.(Also clear the list)
+        //sendEmailsClass.sendEmails(randomGeneratedBuddies);
+
+        sendEmails(randomGeneratedBuddies);
+
+        GroupMemebers.getInstance().clearList();
+
+        // Stop progress dialog
+        progressBar.dismiss();
+
+        //emailWithMultipleAttachments();
+    }
+
+    public void messageBox(final Context context, String title, String message)
+    {
+        AlertDialog.Builder dlgAlert = new AlertDialog.Builder(context);
+        dlgAlert.setMessage(message);
+        dlgAlert.setTitle(title);
+        dlgAlert.setPositiveButton("OK", null);
+
+        dlgAlert.setCancelable(true);
+
+        dlgAlert.setNegativeButton("Ok",
+                new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        progressBar = new ProgressDialog(myListActivity.this);
+                        progressBar.setCancelable(true);
+                        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                        progressBar.show();
+                        finalizeSecretBuddies();
+                    }
+                });
+        dlgAlert.setPositiveButton("Cancel", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                return;
+            }
+        });
+        dlgAlert.create().show();
+    }
+
     private void setHeaderTitle(TextView titleView)
     {
         if (getIntent().hasExtra(MainScreenActivity.SS_GROUP_TYPE))
         {
             titleView.setText("mySecret Santa Group");
-        } else if (getIntent().hasExtra(MainScreenActivity.BUDDY_LIST_TYPE))
+        } else if (getIntent().hasExtra(MainScreenActivity.BUDDY_LIST_TYPE)
+                && !getIntent().hasExtra(MainScreenActivity.MY_LIST_TYPE))
         {
             // Get the wish list extra
             titleView.setText("mySecret Buddy List");
         }
     }
 
-
-    ArrayList<String> filesToGarbageCollect = new ArrayList<String>();
     /**
      * Given the email address whom the user wants to share the
      * wish list with. It will email the list to that email address.
@@ -289,8 +384,8 @@ public class myListActivity extends Activity
 
         // create attachment
         //String filename = "MyWishList.mwl";
-        String wml = getString(R.string.WMLExtension);
-        String filename = buddy.MemberName + wml;
+        String mwl = getString(R.string.MWLExtension);
+        String filename = buddy.MemberName + mwl;
         filesToGarbageCollect.add(filename);
 
         // Create the correct file name.
@@ -323,11 +418,13 @@ public class myListActivity extends Activity
 
         ArrayList<String> filePaths = new ArrayList<String>();
 
-        for (myWishItem wishItem : buddy.wishList)
+        if (buddy.wishList != null)
         {
-            filePaths.add(getImageFullPath(wishItem.getImageName()).getAbsolutePath());
+            for (myWishItem wishItem : buddy.wishList)
+            {
+                filePaths.add(getImageFullPath(wishItem.getImageName()).getAbsolutePath());
+            }
         }
-
         filePaths.add(file.getAbsolutePath());
 
         emailWithMultipleAttachments(buddy, noRecipients, filePaths);
@@ -361,17 +458,20 @@ public class myListActivity extends Activity
     private String createMessageBody(Buddy buddy)
     {
         String message = "";
-        //for (myWishItem item : myWishList.getInstance().getWishList())
-        for (myWishItem item : buddy.wishList)
+        if (buddy.wishList != null)
         {
-            message += item.getItemName() + "\n";
-            message += "- Location: " + item.getLocationName() + "\n";
-            message += "- Price: " + item.getPrice() + "\n";
-            message += "- On Sale: " + (item.isOnSale() ? "Yes" : "No") + "\n";
-            message += "- Wanted Level: " + item.getWantLevel() + "\n\n\n";
+            //for (myWishItem item : myWishList.getInstance().getWishList())
+            for (myWishItem item : buddy.wishList)
+            {
+                message += item.getItemName() + "\n";
+                message += "- Location: " + item.getLocationName() + "\n";
+                message += "- Price: " + item.getPrice() + "\n";
+                message += "- On Sale: " + (item.isOnSale() ? "Yes" : "No") + "\n";
+                message += "- Wanted Level: " + item.getWantLevel() + "\n\n\n";
 
-        }
-        return message;
+            }
+            return message;
+        } else return getString(R.string.NoLIstAvailable);
     }
 
     public void sendEmails(HashMap<Buddy, Buddy> buddyHashMap)
@@ -460,33 +560,40 @@ public class myListActivity extends Activity
             {
                 openNewWishItemActivity(this);
             }
-            if (requestCode == NEW_ITEM_ADDED)
+            // My wish list
+            if (requestCode == NEW_ITEM_ADDED || requestCode == myListFragment.OPENED_ITEM)
             {
                 // Refresh the list to reflect the newly added item.
                 listFragment.refreshList();
-            } else if (requestCode == MEMBER_ADDED)
+            }
+            // Secret Santa List
+            else if (requestCode == MEMBER_ADDED)
             {
+                MainScreenActivity.saveGroupMembers(getFilesDir());
                 secretSantaGroupFragment.refreshList();
             }
-            else if(requestCode == EMAIL_SENT)
+            // Delete the .mwl files that were created to send to the users.
+            else if (requestCode == EMAIL_SENT)
             {
                 garbageCollect();
             }
         }
-        if(requestCode == EMAIL_SENT)
+        // Delete the .mwl files that were created to send to the users.
+        if (requestCode == EMAIL_SENT)
         {
             garbageCollect();
         }
+
     }
 
     private void garbageCollect()
     {
-        for(String filename : filesToGarbageCollect)
-        {
-            File file = new File(getExternalCacheDir(), filename);
-            file.delete();
-        }
-        filesToGarbageCollect.clear();
+//        for(String filename : filesToGarbageCollect)
+//        {
+//            File file = new File(getExternalCacheDir(), filename);
+//            file.delete();
+//        }
+//        filesToGarbageCollect.clear();
     }
 
     public void openNewWishItemActivity(Context context)
@@ -499,24 +606,28 @@ public class myListActivity extends Activity
 
     private ArrayList<myWishItem> compressWishList(ArrayList<myWishItem> wishList)
     {
-        ArrayList<myWishItem> list = new ArrayList<myWishItem>();
-        for (myWishItem item : wishList)
+        if (wishList != null)
         {
-            myWishItem tempItem = new myWishItem();
-            tempItem.setPicture(null);
-            tempItem.setWantLevel(item.getWantLevel());
-            tempItem.setImageName(item.getImageName());
-            tempItem.setPrice(item.getPrice());
-            tempItem.setLocationName(item.getLocationName());
-            tempItem.setOnSale(item.isOnSale());
-            tempItem.setItemName(item.getItemName());
-            tempItem.setCoordinates(item.getCoordinates());
+            ArrayList<myWishItem> list = new ArrayList<myWishItem>();
+            for (myWishItem item : wishList)
+            {
+                myWishItem tempItem = new myWishItem();
+                tempItem.setPicture(null);
+                tempItem.setWantLevel(item.getWantLevel());
+                tempItem.setImageName(item.getImageName());
+                tempItem.setPrice(item.getPrice());
+                tempItem.setLocationName(item.getLocationName());
+                tempItem.setOnSale(item.isOnSale());
+                tempItem.setItemName(item.getItemName());
+                tempItem.setCoordinates(item.getCoordinates());
 
-            //tempItem.setJSONBitmapString(getStringFromBitmap(item.getPicture()));
+                //tempItem.setJSONBitmapString(getStringFromBitmap(item.getPicture()));
 
-            list.add(tempItem);
+                list.add(tempItem);
+            }
+            return list;
         }
-        return list;
+        return null;
     }
 
     public File getImageFullPath(String imageName)
@@ -529,10 +640,21 @@ public class myListActivity extends Activity
     }
 
     @Override
+    protected void onResume()
+    {
+        super.onResume();
+        //MainScreenActivity.loadMyWishList(getFilesDir());
+        //MainScreenActivity.loadGroupMembers(getFilesDir());
+        //MainScreenActivity.loadBuddyList(getFilesDir());
+    }
+
+    @Override
     protected void onPause()
     {
         super.onPause();
 
         MainScreenActivity.saveGroupMembers(getFilesDir());
+        MainScreenActivity.saveBuddyList(getFilesDir());
+        MainScreenActivity.saveMyWishList(getFilesDir());
     }
 }

@@ -23,6 +23,10 @@
     email application.</string>
     <string name="signUp">Sign Up</string>
     <string name="moreThanTwoBuddiesWarning">You must have more than two buddies.</string>
-    <string name="WMLExtension">.wml</string>
+    <string name="MWLExtension">.mwl</string>
+    <string name="NoLIstAvailable">No List Available</string>
+    <string name="myList">myList</string>
+    <string name="incorrectInputFormat">One or more fields are empty or in an incorrect format</string>
+    <string name="sendingListsWarning">Clicking ok will send the lists and clear the Secret Santa List.\n Are you sure you want to send?</string>
 
 </resources>

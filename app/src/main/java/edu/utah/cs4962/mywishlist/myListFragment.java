@@ -44,6 +44,7 @@ public class myListFragment extends Fragment implements ListAdapter
 
     public static final int BUDDY_LIST = 201;
     public static final int MY_LIST = 202;
+    public static final int OPENED_ITEM = 203;
 
     private int LIST_TYPE = 0;
 
@@ -91,6 +92,7 @@ public class myListFragment extends Fragment implements ListAdapter
         return wishItemList;
     }
 
+
     private void openSelectedItem(Context context, int itemId)
     {
         Intent myItemIntent = new Intent(context, myWishItemActivity.class);
@@ -101,7 +103,8 @@ public class myListFragment extends Fragment implements ListAdapter
         {
             myItemIntent.putExtra(BUDDY_ID, buddyID);
         }
-        startActivity(myItemIntent);
+        startActivityForResult(myItemIntent, OPENED_ITEM);
+        //startActivity(myItemIntent);
     }
 
     public void refreshList()
@@ -276,5 +279,13 @@ public class myListFragment extends Fragment implements ListAdapter
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
         return bitmap;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if(resultCode == getActivity().RESULT_OK && requestCode == OPENED_ITEM){
+            refreshList();
+        }
     }
 }

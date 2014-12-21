@@ -28,6 +28,7 @@ public class MainScreenActivity extends Activity
     public static final String MY_LIST_TYPE = "myList";
     public static final String SS_GROUP_TYPE = "ssGroup";
     public static final String BUDDY_LIST_TYPE = "buddyList";
+    public static final String ADD_NEW_ITEM = "buddyList";
 
     public static final String BUDDY_LIST_FILE = "myBuddyList.txt";
     public static final String GROUP_MEMBERS_FILE = "groupMembers.txt";
@@ -81,6 +82,19 @@ public class MainScreenActivity extends Activity
             public void onClick(View view)
             {
                 openWishList(MainScreenActivity.this, BUDDY_LIST_TYPE);
+            }
+        });
+
+        Button addNewItem = (Button) findViewById(R.id.AddNewItem);
+        addNewItem.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Intent intent = new Intent(MainScreenActivity.this, myListActivity.class);
+                intent.putExtra(MY_LIST_TYPE, true);
+                intent.putExtra(ADD_NEW_ITEM, true);
+                startActivity(intent);
             }
         });
 
@@ -146,8 +160,9 @@ public class MainScreenActivity extends Activity
         }
     }
 
-    public void loadBuddyList(File filesDir)
+    public static void loadBuddyList(File filesDir)
     {
+        Gson _gson = new Gson();
         try {
             File file = new File(filesDir, BUDDY_LIST_FILE);
             FileReader textReader = new FileReader(file);
@@ -195,8 +210,9 @@ public class MainScreenActivity extends Activity
         }
     }
 
-    public void loadGroupMembers(File filesDir)
+    public static void loadGroupMembers(File filesDir)
     {
+        Gson _gson = new Gson();
         try {
             File file = new File(filesDir, GROUP_MEMBERS_FILE);
             FileReader textReader = new FileReader(file);
@@ -244,8 +260,9 @@ public class MainScreenActivity extends Activity
         }
     }
 
-    public void loadMyWishList(File filesDir)
+    public static void loadMyWishList(File filesDir)
     {
+        Gson _gson = new Gson();
         try {
             File file = new File(filesDir, MY_WISH_LIST_FILE);
             FileReader textReader = new FileReader(file);
