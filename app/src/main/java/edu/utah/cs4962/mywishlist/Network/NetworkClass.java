@@ -54,7 +54,6 @@ public class NetworkClass
 
     wishList _wishList;
     Gson _gson = new Gson();
-    String rbp_URL = "http://192.168.1.19:5000/myWishList/api/v1.0/list"; // Raspberry Pi
 
     //String BASE_URL = "http://155.99.90.115:5000/todo/api/v1.0/tasks/2";
     //String BASE_URL = "http://155.99.90.115:5000/myWishList/api/v1.0/list"; // School
