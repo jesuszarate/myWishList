@@ -43,6 +43,8 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
+import edu.utah.cs4962.mywishlist.Network.NetworkClass;
+
 /**
  * Created by Jesus Zarate on 11/25/14.
  */
@@ -133,8 +135,6 @@ public class myListActivity extends Activity
         titleView.setTextColor(pink);
 
         _addItemButton = new ImageButton(this);
-        //_addItemButton.setImageResource(R.drawable.plus_sign);
-        //_addItemButton.setBackground(getResources().getDrawable(R.drawable.add_button));
         _addItemButton.setImageResource(R.drawable.add_button);
         _addItemButton.setBackgroundColor(Color.TRANSPARENT);
         _addItemButton.setOnClickListener(new View.OnClickListener()
@@ -204,6 +204,12 @@ public class myListActivity extends Activity
             boolean myList = getIntent().getBooleanExtra(MainScreenActivity.MY_LIST_TYPE, true);
             if (myList)
             {
+                int USER = 1;
+                //TODO: Get the list from the database here
+                NetworkClass networkClass = new NetworkClass();
+                networkClass.getUserList(myListActivity.this, USER);
+                //networkClass.addNewItem(myListActivity.this);
+
                 listFragment.init(myListFragment.MY_LIST, 0);
             }
             // If the list is coming from a selected buddy

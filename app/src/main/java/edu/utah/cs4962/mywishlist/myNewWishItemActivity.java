@@ -27,11 +27,14 @@ import android.widget.Toast;
 
 import java.io.File;
 
+import edu.utah.cs4962.mywishlist.Network.NetworkClass;
+
 /**
  * Created by Jesus Zarate on 11/24/14.
  */
 public class myNewWishItemActivity extends Activity
 {
+
 
     public String imagePath;
 
@@ -88,9 +91,6 @@ public class myNewWishItemActivity extends Activity
             {
                 latitude = gpsTracker.getLatitude();
                 longitude = gpsTracker.getLongitude();
-
-//                Toast.makeText(getApplicationContext(), "Latitude: " + latitude +
-//                        "\nLongitude: " + longitude, Toast.LENGTH_SHORT).show();
             }
 
             // Set the image taken to the item preview
@@ -137,6 +137,10 @@ public class myNewWishItemActivity extends Activity
             {
                 if (checkCorrectInput())
                 {
+
+                    //TODO: Add the item to the database here
+
+
                     newWishItem.setItemName(itemName.getText().toString());
                     newWishItem.setLocationName(itemLocation.getText().toString());
                     newWishItem.setPrice(Double.parseDouble(itemPrice.getText().toString()));
@@ -185,6 +189,13 @@ public class myNewWishItemActivity extends Activity
         });
 
         //endregion <Add New Item Button>
+    }
+
+
+
+    public void addItemToDB()
+    {
+        NetworkClass networkClass = new NetworkClass();
     }
 
     public Bitmap getPic(String ImagePath)
